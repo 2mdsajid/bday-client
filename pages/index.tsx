@@ -9,6 +9,7 @@ export default function Home() {
   return (
     <>
     <div>home</div>
+    <div>header</div>
     </>
   )
 }
