@@ -3,6 +3,7 @@
 </svg> */}
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 const Header = ({ isDarkMode, toggleDarkMode }) => {
     // const {toggleDarkMode,isDarkMode} = props
@@ -26,7 +27,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
 
     return (
         <header>
-            <nav className={`flex items-center  justify-between fixed z-50 w-screen py-4 px-8 ${navBgClass}`}>
+            <nav className={`flex items-center  justify-between fixed z-50 w-screen py-4 px-2 sm:px-8 ${navBgClass}`}>
                 <div className={`flex items-center text-xl font-bold ${navTextClass}`}>
                     {/* <img className="w-8 h-8 mr-2" src={headicon} alt="Logo" /> */}
                     <svg className="w-8 h-8 mr-2" fill={headIconFill} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -36,38 +37,48 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                 </div>
                 <ul className={`flex flex-col pl-2 justify-center items-center sm:hidden w-screen ${isNavOpen ? 'block' : 'hidden'} ${navBgClass} ${navTextClass} `}
                     style={{ position: 'absolute', top: '3.5rem', right: 0, zIndex: 999 }}>
-                    <li><a className={`block py-2 ${navTextClass}`} href="#">Home</a></li>
-                    <li><a className={`block py-2 ${navTextClass}`} href="#">Add New</a></li>
-                    <li><a className={`block py-2 ${navTextClass}`} href="#">Update Yours</a></li>
-                    <li><a className={`block py-2 ${navTextClass}`} href="#">My Website</a></li>
+                    <Link href="/" className={`block py-2 ${navTextClass}`}>
+                        <li>
+                            Home
+                        </li>
+                    </Link><Link href="/addnew" className={`block py-2 ${navTextClass}`}>
+                        <li>
+                            Add New
+                        </li>
+                    </Link>
                 </ul>
                 <div className="hidden sm:flex">
                     <ul className={`flex space-x-4`}>
-                        <li><a className={`hover:text-white ${navTextClass}`} href="#">Home</a></li>
-                        <li><a className={`hover:text-white ${navTextClass}`} href="#">Add New</a></li>
-                        <li><a className={`hover:text-white ${navTextClass}`} href="#">Update Yours</a></li>
-                        <li><a className={`hover:text-white ${navTextClass}`} href="#">My Website</a></li>
+                    <Link href="/" className={`${navTextClass}`}>
+                        <li>
+                            Home
+                        </li>
+                    </Link><Link href="/addnew" className={`${navTextClass}`}>
+                        <li>
+                            Add New
+                        </li>
+                    </Link>
                     </ul>
                 </div>
                 <div className='flex'>
-                <div>
-                    <button
-                        className={`mx-2 rounded-full w-10 h-10 focus:outline-none ${isDarkMode ? 'bg-white' : 'bg-dark'} ${navTextClass}`}
-                        onClick={toggleDarkMode}
-                    >
-                        {isDarkMode ? '🌞' : '🌙'}
-                    </button>
+                    <div>
+                        <button
+                            className={`mx-2 rounded-full w-10 h-10 focus:outline-none ${isDarkMode ? 'bg-white' : 'bg-dark'} ${navTextClass}`}
+                            onClick={toggleDarkMode}
+                        >
+                            {isDarkMode ? '🌞' : '🌙'}
+                        </button>
+                    </div>
+                    <div className="sm:hidden ">
+                        <button
+                            className={`mx-2 text-3xl rounded-full w-10 h-10 focus:outline-none ${isDarkMode ? 'bg-dark' : 'bg-white'} ${navTextClass}`}
+                            onClick={toggleNav}
+                        >
+                            {isNavOpen ? 'X' : '☰'}
+                        </button>
+                    </div>
                 </div>
-                <div className="sm:hidden ">
-                    <button
-                        className={`mx-2 text-3xl rounded-full w-10 h-10 focus:outline-none ${isDarkMode ? 'bg-dark' : 'bg-white'} ${navTextClass}`}
-                        onClick={toggleNav}
-                    >
-                        {isNavOpen ? 'X' : '☰'}
-                    </button>
-                </div>
-                </div>
-                
+
             </nav>
         </header>
     );

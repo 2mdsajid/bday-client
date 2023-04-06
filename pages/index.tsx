@@ -30,41 +30,14 @@ export default function Home() {
   const [people, setPeople] = useState([]);
   const [initialPeople, setinitialPeople] = useState([])
 
+  const [todaybirthdays, settodayBirthdays] = useState([])
+
 
 
   // BIRTHDAY CARD --------------------------------------
 
-  const onExpire = (id) => {
-    // Find the person object in the array with the matching id
-    // const person = people.find(p => p._id === id);
-
-    // // Get the birth date as a Date object
-    // const birthDate = new Date(`2000 ${person.dob}`);
-
-    // // Get the current date as a Date object
-    // const currentDate = new Date();
-
-    // // Check if the birth date has already passed this year
-    // birthDate.setFullYear(currentDate.getFullYear());
-
-    // if (birthDate < currentDate) {
-    //   console.log(`${person.name}'s birthday has already passed this year.`);
-    //   return false;
-    // }
-
-    // // Check if the birth date is today
-    // if (birthDate.getMonth() === currentDate.getMonth() && birthDate.getDate() === currentDate.getDate()) {
-    //   console.log(`Happy birthday ${person.name}!`);
-    //   return true;
-    // }
-  }
-
-  const handleEdit = () => {
-    console.log('edit')
-  }
-
   // popup card--------------------------------
-  function PopupCard({ id, index, name, picUrl, dob,bday, bio, closePopup, min, sec }) {
+  function PopupCard({ id, index, name, picUrl, dob, bday, bio, closePopup, min, sec }) {
     const [daysLeft, setDaysLeft] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
     const [editMode, setEditMode] = useState(false)
@@ -76,7 +49,7 @@ export default function Home() {
       name: name,
       bday: bday,
       image: "",
-      bio: ""
+      bio: bio
     });
 
     const handleSubmit = async (event) => {
@@ -220,7 +193,7 @@ export default function Home() {
                     <span className="text-gray-600 dark:text-gray-400 capitalize">{bday}</span>
                   </div>
                   <div className="text-gray-600 dark:text-gray-400 mt-2">{bio ? bio : `'This is a dummy bio'`}</div>
-                  <div className="text-gray-600 dark:text-gray-400 text-xl mt-3 "><Timer expiryTimestamp={dob} onExpire={onExpire} min={min} sec={sec} /></div>
+                  <div className="text-gray-600 dark:text-gray-400 text-xl mt-3 "><Timer expiryTimestamp={dob} min={min} sec={sec} /></div>
                 </div>
               </div>
             )}
@@ -234,8 +207,52 @@ export default function Home() {
   }
 
 
+  // TODAYS BIRTHDAYS
+  // const [quote,setQuote] = useState('')
+  // get quote
+  // async function getBirthdayQuote() {
+  //   const response = await fetch('https://api.quotable.io/random?tags=birthday');
+  //   const data = await response.json();
+  //   setQuote(data.content)
+  //   console.log('quite',data)
+  //   return;
+  // }
 
-  function BirthdayCard({ index, cat, id, name, picUrl, dob,bday, bio, min, sec }) {
+
+  const TodayBirthday = ({ person, index }) => {
+
+    const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
+    const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
+
+    // getBirthdayQuote()
+
+    return (
+      <div className={`${cardBg} shadow-md rounded-md p-0 my-2 h-full w-[18rem] md:w-96 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
+        <div className="relative">
+          <img src={person.pic ? person.pic : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${person.name}'s picture`} className="w-4/5 mx-auto object-cover rounded-md" />
+          {/* <div className="absolute inset-0 bg-opacity-70 bg-gray-900 dark:bg-gray-800 rounded-md"></div> */}
+        </div>
+        <div className="p-2">
+          <div className={`flex flex-col sm:flex-row items-center justify-center  sm:space-x-2 text-lg font-medium ${textColor}`}>
+            {/* <span>{person.name}</span> */}
+            <h3 className={`text-center text-xl font-bold ${textColor} tracking-wide `}>Happy Birthday, {person.name}!</h3>
+            {/* <span className="text-gray-600 dark:text-gray-400 capitalize">{person.bday}</span> */}
+          </div>
+
+          <div className={`pt-4 ${textColor}`}>
+            <h4 className="text-md font-medium pb-2 text-center">{"Another year of beating like a healthy heart - happy birthday!"}</h4>
+            {/* <p>{quote}</p> */}
+          </div>
+
+        </div>
+      </div>
+    );
+  };
+
+
+
+
+  function BirthdayCard({ index, cat, id, name, picUrl, dob, bday, bio, min, sec }) {
     const [popupOpen, setPopupOpen] = useState(false);
 
     // console.log('key',id)
@@ -254,26 +271,34 @@ export default function Home() {
     const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
     const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
 
-
-
-
     return (
       <>
         <div onClick={openPopup} className={`${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
           <img src={picUrl ? picUrl : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
           <div className="p-2 sm:p-4 text-center sm:text-left">
-            <div className={`flex flex-col sm:flex-row items-center justify-between text-md font-medium ${textColor}`}>
+            <div className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}>
               <span>{name}</span>
-              <span>{cat}</span>
-              <span className="text-gray-600 dark:text-gray-400 capitalize">{bday}</span>
+              <span className="text-gray-600 dark:text-gray-400 text-xl capitalize">{bday}</span>
             </div>
-            <Timer expiryTimestamp={dob} onExpire={() => onExpire(id)} min={min} sec={sec} />
+            <Timer expiryTimestamp={dob} min={min} sec={sec} />
           </div>
         </div>
         {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} closePopup={closePopup} min={min} sec={sec} />}
       </>
     );
+  }
 
+  // FILTER BIRTHDAYS
+  const filterBdays = (people) => {
+
+    const filteredPeople = people.filter(person => person.year === true);
+    settodayBirthdays(filteredPeople);
+
+    // console.log('people', filteredPeople)
+
+    // Remove the filtered people from the people array
+    const remainingPeople = people.filter(person => person.year !== true);
+    return remainingPeople
 
   }
 
@@ -281,13 +306,12 @@ export default function Home() {
 
   // birthday card calling data--------------------------
   function BirthdayCards() {
-    console.log('people in card',people)
-
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-0 sm:p-4">
         {people.map((person, index) => (
           <BirthdayCard index={index} cat={person.category} id={person._id} name={person.name} picUrl={person.pic} dob={person.dob} bday={person.bday} bio={person.bio} min={person.min} sec={person.sec} />
         ))}
+
       </div>
     );
   }
@@ -343,29 +367,29 @@ export default function Home() {
     };
 
     const today = new Date();
-const todayYear = today.getFullYear();
-const todayMonth = today.getMonth() + 1;
-const todayDate = today.getDate();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth() + 1;
+    const todayDate = today.getDate();
 
-data.forEach((person) => {
-  const [monthStr, dayStr] = person.bday.split(' ');
-  const month = monthMap[monthStr.toLowerCase()]+1;
-  const day = parseInt(dayStr);
+    data.forEach((person) => {
+      const [monthStr, dayStr] = person.bday.split(' ');
+      const month = monthMap[monthStr.toLowerCase()] + 1;
+      const day = parseInt(dayStr);
 
-  let birthYear = todayYear;
+      let birthYear = todayYear;
 
-  if (month < todayMonth || (month === todayMonth && day < todayDate)) {
-    birthYear++;
-  }else if (month === todayMonth && day === todayDate) {
-    person.year = 'Happy Birthday';
-    console.log('y',person.year)
-  } else {
-    person.year = '';
-  }
+      if (month < todayMonth || (month === todayMonth && day < todayDate)) {
+        birthYear++;
+      } else if (month === todayMonth && day === todayDate) {
+        person.year = true;
+        // settodaysBirthdays([...todaybirthdays, person])
+      } else {
+        person.year = '';
+      }
 
-  person.dob = `${birthYear} ${monthStr} ${dayStr}`;
+      person.dob = `${birthYear} ${monthStr} ${dayStr}`;
 
-});
+    });
 
 
     // Sort the data array by dob in ascending order
@@ -379,9 +403,6 @@ data.forEach((person) => {
   };
 
 
-
-
-
   const fetchData = async () => {
     try {
       const response = await fetch('/getallperson');
@@ -389,8 +410,10 @@ data.forEach((person) => {
 
       const res = await checkCat(result.data)
 
-      setPeople(res);
-      setinitialPeople(res);
+      const newpeople = await filterBdays(res)
+
+      setPeople(newpeople);
+      setinitialPeople(newpeople);
 
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -403,14 +426,6 @@ data.forEach((person) => {
     // filterBdays()
   }, [])
 
-  // useEffect(() => {
-  //   people.sort((a, b) => {
-  //     const dateA = new Date(`2000 ${a.dob}`).getTime();
-  //     const dateB = new Date(`2000 ${b.dob}`).getTime();
-  //     return dateA - dateB;
-  //   });
-  // }, [people]);
-
 
   return (
     <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
@@ -422,6 +437,14 @@ data.forEach((person) => {
           placeholder="Search birthdays..."
           onChange={searchBdays}
         />
+      </div>
+      <div className='flex flex-col sm:flex-row flex-wrap items-center sm:items-start justify-center space-x-2 py-5'>
+        {todaybirthdays && <>
+          {todaybirthdays.map((person, index) => {
+            return <TodayBirthday person={person} index={index} />
+          })}
+        </>
+        }
       </div>
       <div className='flex items-center justify-center pt-4'>
         {people && <BirthdayCards />}
