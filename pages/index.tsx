@@ -9,15 +9,9 @@ import ThemeProvider from '../components/themeprovider'
 import { faTimes, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import Timer from '@/components/Timer'
+import Alert from '@mui/material/Alert';
 
-function MyComponent() {
-  return (
-    <div>
-      <FontAwesomeIcon icon={faTimes} />
-    </div>
-  );
-}
+import Timer from '@/components/Timer'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -32,28 +26,46 @@ export default function Home() {
 
   const [todaybirthdays, settodayBirthdays] = useState([])
 
-
-
+  
+  
+  
+  
   // BIRTHDAY CARD --------------------------------------
-
+  
   // popup card--------------------------------
-  function PopupCard({ id, index, name, picUrl, dob, bday, bio, closePopup, min, sec }) {
-    const [daysLeft, setDaysLeft] = useState(null);
+  function PopupCard({ id, index, name, picUrl, dob, bday, bio,popupOpen, openPopup, closePopup, min, sec }) {
     const [showPopup, setShowPopup] = useState(false);
     const [editMode, setEditMode] = useState(false)
 
-    const [image, setImage] = useState(null);
+    const [alertSeverity, setAlertSeverity] = useState('error');
+    const [alertMessage, setAlertMessage] = useState('');
+    const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+    // const [alerttext,setalertText] = useState('')
+    // const [alertcolor,setalertColor] = useState('text-green-900')
+
+    const [hidesubmit,sethideSubmit] = useState(false)
+    
+    const [pic, setPic] = useState(null);
 
     const [formData, setFormData] = useState({
       id: id,
       name: name,
       bday: bday,
-      image: "",
+      pic: "",
       bio: bio
     });
 
-    const handleSubmit = async (event) => {
-      event.preventDefault();
+    const handleSubmit = async (e,val) => {
+      e.preventDefault();
+      let todelete = false
+
+      // console.log(event.currentTarget.value)
+      if (val === 'delete'){
+        todelete = true
+      } else {
+        todelete = false
+      }
 
       // create a new form data object
       const data = new FormData();
@@ -62,23 +74,43 @@ export default function Home() {
       data.append('name', formData.name);
       data.append('bday', formData.bday);
       data.append('bio', formData.bio);
+      data.append('del', todelete);
 
-      // append the image to the object
-      if (image !== null) {
-        data.append('pic', image);
+      // append the pic to the object
+      if (pic !== null) {
+        data.append('pic', pic);
       }
 
-      console.log('bio', formData)
+      // console.log('bio', formData)
+      try {
+        // send the post request to the server
+        const response = await fetch('/addreview', {
+          method: 'POST',
+          body: data
+        });
 
-      // send the post request to the server
-      const response = await fetch('/updateperson', {
-        method: 'POST',
-        body: data
-      });
+        // parse the response as JSON
+        const resp = await response.json();
+        setAlertMessage(resp.message)
+        console.log(resp)
+        
+        if (resp.status === 201) {
+          console.log('201')
+          setAlertSeverity('success')
+        } else {
+          setAlertSeverity('warning')
+        }
+        
+        setIsAlertOpen(true)
+        
+        setTimeout(() => {
+            setIsAlertOpen(false)
+          // setalertText('')
+        }, 2000);
+      } catch (error) {
+        console.log(error.message)
+      }
 
-      // parse the response as JSON
-      const result = await response.json();
-      console.log(result)
 
       // // return the result
       // return result;
@@ -88,7 +120,7 @@ export default function Home() {
 
 
     useEffect(() => {
-      setShowPopup(true);
+      openPopup();
     }, []);
 
     const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
@@ -96,9 +128,9 @@ export default function Home() {
 
     return (
       <>
-        <div className={`overlay ${showPopup ? 'visible opacity-100' : 'invisible opacity-0'}`} onClick={closePopup}></div>
-        <div className={`fixed z-10 top-3 sm:top-10 left-0 h-screen w-screen flex items-center justify-center ${showPopup ? 'visible' : 'invisible'}`}>
-          <div className={`shadow-lg rounded-md p-2 sm:p-4 w-[70%] sm:w-96 transition duration-600 transform ${showPopup ? 'scale-100' : 'scale-0'} ${cardBg}`}>
+        <div className={`overlay ${popupOpen ? 'visible opacity-100' : 'invisible opacity-0'}`} onClick={closePopup}></div>
+        <div className={`fixed z-10 top-3 sm:top-10 left-0 h-screen w-screen flex items-center justify-center ${popupOpen ? 'visible' : 'invisible'}`}>
+          <div className={`shadow-lg rounded-md p-2 sm:p-4 w-[70%] sm:w-96 transition duration-600 transform ${popupOpen ? 'scale-100' : 'scale-0'} ${cardBg}`}>
             <div className="px-3 sm:px-0 flex justify-between items-center">
               <button className={`h-10 w-10 text-2xl rounded-full p-2 ${cardBg}`} onClick={() => { editMode ? setEditMode(false) : setEditMode(true); }}>
                 <FontAwesomeIcon icon={faEdit} />
@@ -110,6 +142,8 @@ export default function Home() {
             {editMode ? (
               // FORM--------------------------------------
               <form className={`${cardBg} p-4 rounded-md shadow-md`} onSubmit={handleSubmit}>
+                <>{isAlertOpen && <Alert severity={alertSeverity}>{alertMessage}</Alert>}</>
+                {/* <p className={`text-center ${alertcolor}`}>{alerttext}</p> */}
                 <div className="mb-4">
                   <label className={`${textColor} block mb-2`} htmlFor="name">
                     Name
@@ -144,7 +178,7 @@ export default function Home() {
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="image"
                     type="file"
-                    onChange={(event) => setImage(event.target.files[0])}
+                    onChange={(event) => setPic(event.target.files[0])}
                   />
                 </div>
                 <div className="mb-4">
@@ -160,22 +194,25 @@ export default function Home() {
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   ></textarea>
                 </div>
-                <div className="flex justify-end mt-3">
-                  <button
+                <div className={`flex ${hidesubmit ? 'justify-center' : 'justify-end'} mt-3 text-sm sm:text-md`}>
+                  {!hidesubmit && <button
                     type="submit"
-                    onClick={handleSubmit}
-                    className={`bg-green-500 text-white px-4 py-2 mr-2 rounded-md ${textColor}`}
+                    value='submit'
+                    onClick={(e) => handleSubmit(e, 'submit')}
+                    className={`bg-green-500 text-white p-2 mr-2 rounded-md ${textColor}`}
                   >
-                    Submit
-                  </button>
+                    Update
+                  </button>}
                   <button
                     type="button"
-                    className={`bg-red-500 text-white px-4 py-2 rounded-md ${textColor}`}
-                    onClick={() => {
-                      editMode ? setEditMode(false) : setEditMode(true);
+                    value='delete'
+                    className={`bg-red-500 text-white p-2 rounded-md ${textColor}`}
+                    onClick={(e) => {
+                      {hidesubmit && handleSubmit(e,'delete')}
+                      sethideSubmit(true)
                     }}
                   >
-                    Delete
+                    {hidesubmit ? 'Click Again' : 'Delete My Profile'}
                   </button>
                 </div>
               </form>
@@ -192,8 +229,8 @@ export default function Home() {
                     <span>{name}</span>
                     <span className="text-gray-600 dark:text-gray-400 capitalize">{bday}</span>
                   </div>
-                  <div className="text-gray-600 dark:text-gray-400 mt-2">{bio ? bio : `'This is a dummy bio'`}</div>
-                  <div className="text-gray-600 dark:text-gray-400 text-xl mt-3 "><Timer expiryTimestamp={dob} min={min} sec={sec} /></div>
+                  <div className="text-gray-600 text-center dark:text-gray-400 mt-2">{bio ? `'${bio}'` : `'This is a dummy bio'`}</div>
+                  <div className={`${textColor} font-medium text-center  text-xl mt-3`}><Timer expiryTimestamp={dob} min={min} sec={sec} /></div>
                 </div>
               </div>
             )}
@@ -201,22 +238,7 @@ export default function Home() {
         </div>
       </>
     );
-
-
-
   }
-
-
-  // TODAYS BIRTHDAYS
-  // const [quote,setQuote] = useState('')
-  // get quote
-  // async function getBirthdayQuote() {
-  //   const response = await fetch('https://api.quotable.io/random?tags=birthday');
-  //   const data = await response.json();
-  //   setQuote(data.content)
-  //   console.log('quite',data)
-  //   return;
-  // }
 
 
   const TodayBirthday = ({ person, index }) => {
@@ -249,9 +271,6 @@ export default function Home() {
     );
   };
 
-
-
-
   function BirthdayCard({ index, cat, id, name, picUrl, dob, bday, bio, min, sec }) {
     const [popupOpen, setPopupOpen] = useState(false);
 
@@ -263,6 +282,7 @@ export default function Home() {
     };
 
     const closePopup = () => {
+      // console.log('closed pipup')
       document.body.classList.remove("no-scroll");
       setPopupOpen(false);
     };
@@ -283,7 +303,7 @@ export default function Home() {
             <Timer expiryTimestamp={dob} min={min} sec={sec} />
           </div>
         </div>
-        {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} closePopup={closePopup} min={min} sec={sec} />}
+        {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} popupOpen={popupOpen} openPopup={openPopup} closePopup={closePopup}  min={min} sec={sec} />}
       </>
     );
   }
@@ -291,13 +311,13 @@ export default function Home() {
   // FILTER BIRTHDAYS
   const filterBdays = (people) => {
 
-    const filteredPeople = people.filter(person => person.year === true);
+    const filteredPeople = people.filter(person => person.isbirthday === true);
     settodayBirthdays(filteredPeople);
 
     // console.log('people', filteredPeople)
 
     // Remove the filtered people from the people array
-    const remainingPeople = people.filter(person => person.year !== true);
+    const remainingPeople = people.filter(person => person.isbirthday !== true);
     return remainingPeople
 
   }
@@ -306,6 +326,7 @@ export default function Home() {
 
   // birthday card calling data--------------------------
   function BirthdayCards() {
+    // console.log('people in card', people)
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-0 sm:p-4">
         {people.map((person, index) => (
@@ -381,10 +402,10 @@ export default function Home() {
       if (month < todayMonth || (month === todayMonth && day < todayDate)) {
         birthYear++;
       } else if (month === todayMonth && day === todayDate) {
-        person.year = true;
+        person.isbirthday = true;
         // settodaysBirthdays([...todaybirthdays, person])
       } else {
-        person.year = '';
+        person.isbirthday = false;
       }
 
       person.dob = `${birthYear} ${monthStr} ${dayStr}`;
@@ -405,6 +426,7 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
+      console.log('fetching..................')
       const response = await fetch('/getallperson');
       const result = await response.json();
 
@@ -432,9 +454,9 @@ export default function Home() {
       <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
       <div className={`flex items-center justify-center w-1/2 mx-auto pt-20 ${appBgClass}`}>
         <input
-          className={`bg-gray-200 focus:bg-white border-transparent focus:border-gray-300 w-full rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none ${appTextClass}`}
+          className={`bg-gray-200 focus:bg-white border-transparent focus:border-gray-300 w-full rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none text-black`}
           type="text"
-          placeholder="Search birthdays..."
+          placeholder="Search Your Name..."
           onChange={searchBdays}
         />
       </div>

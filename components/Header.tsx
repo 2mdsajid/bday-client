@@ -46,6 +46,11 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                             Add New
                         </li>
                     </Link>
+                    <Link href="/review" className={`block py-2 ${navTextClass}`}>
+                        <li>
+                            Review
+                        </li>
+                    </Link>
                 </ul>
                 <div className="hidden sm:flex">
                     <ul className={`flex space-x-4`}>
@@ -56,6 +61,11 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                     </Link><Link href="/addnew" className={`${navTextClass}`}>
                         <li>
                             Add New
+                        </li>
+                    </Link>
+                    <Link href="/review" className={`${navTextClass}`}>
+                        <li>
+                            Review
                         </li>
                     </Link>
                     </ul>

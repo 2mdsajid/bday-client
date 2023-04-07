@@ -82,7 +82,7 @@ function AddNew() {
                     pic: null
                 });
 
-            } else{
+            } else {
 
                 setAlertSeverity('warning');
             }
@@ -92,10 +92,10 @@ function AddNew() {
             setAlertMessage(error.message);
         }
         setIsAlertOpen(true);
-        
+
         setTimeout(() => {
             setIsAlertOpen(false);
-            
+
         }, 1000);
 
     };
@@ -111,7 +111,7 @@ function AddNew() {
                             Name
                         </label>
                         <div className="mt-2">
-                            <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required className="block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                            <input type="text" id="name" name="name" value={formData.name} onChange={handleChange}  required className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                         </div>
                     </div>
                     <div className="mt-6">
@@ -119,7 +119,7 @@ function AddNew() {
                             Birthday
                         </label>
                         <div className="mt-2">
-                            <input type="text" id="bday" name="bday" value={formData.bday} onChange={handleChange} required placeholder="e.g. Dec 25" className="block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                            <input type="text" id="bday" name="bday" value={formData.bday} onChange={handleChange}  required placeholder="e.g. Dec 25" className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                         </div>
                     </div>
                     <div className="mt-6">
@@ -127,7 +127,7 @@ function AddNew() {
                             Bio
                         </label>
                         <div className="mt-2">
-                            <textarea id="bio" name="bio" placeholder='Bio - less than 10 words' value={formData.bio} onChange={handleChange} className="block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                            <textarea id="bio" name="bio" placeholder='Bio - less than 10 words' value={formData.bio} onChange={handleChange}  className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
                         </div>
                     </div>
                     <div className="mt-6">
