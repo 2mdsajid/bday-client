@@ -13,7 +13,7 @@ function Timer({ expiryTimestamp, min, sec }: TimerProps) {
     return num < 10 ? `0${num}` : `${num}`;
   }
 
-  const expiryDate = new Date(`${expiryTimestamp} 00:${min}:${sec}`);
+  const expiryDate = new Date(`${expiryTimestamp} 00:00:${sec}`);
 
   const {
     seconds,
