@@ -59,7 +59,7 @@ export default function Home() {
     const [hidesubmit, sethideSubmit] = useState(false)
     const [deleteFlag, setDeleteFlag] = useState(false);
 
-    const [pic, setPic] = useState<File | null>(null);
+    const [pic, setPic] = useState(null);
 
     const [formData, setFormData] = useState({
       id: id,
