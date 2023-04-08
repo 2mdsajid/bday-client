@@ -319,7 +319,7 @@ export default function Home() {
 
     return (
       <>
-        <div onClick={openPopup} className={`${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
+        <div key={id} onClick={openPopup} className={`${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
           <img src={picUrl ? picUrl : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
           <div className="p-2 sm:p-4 text-center sm:text-left">
             <div className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}>
