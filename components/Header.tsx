@@ -5,7 +5,16 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-const Header = ({ isDarkMode, toggleDarkMode }) => {
+interface HeaderProps {
+    isDarkMode: boolean;
+    toggleDarkMode: () => void;
+  }
+
+const Header = ({ isDarkMode, toggleDarkMode }: HeaderProps) => {
+
+    // interface Header {
+    //     isDarkMode: boolean;
+    //   }
     // const {toggleDarkMode,isDarkMode} = props
     // const [isDarkMode, setIsDarkMode] = useState(false); // State for tracking dark mode
     const [isNavOpen, setIsNavOpen] = useState(false); // State for tracking mobile navigation open/closed

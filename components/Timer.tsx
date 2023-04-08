@@ -1,7 +1,13 @@
 import React, {  } from 'react'
 import { useTimer } from 'react-timer-hook';
 
-function Timer({ expiryTimestamp, min, sec }) {
+interface TimerProps {
+  expiryTimestamp: number;
+  min: number;
+  sec: number;
+}
+
+function Timer({ expiryTimestamp, min, sec }: TimerProps) {
 
   function convertToTwoDigit(num: number) {
     return num < 10 ? `0${num}` : `${num}`;

@@ -4,20 +4,30 @@ import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import Header from '@/components/Header'
 
-import ThemeProvider from '../components/themeprovider'
+import { FormEventHandler } from 'react';
+
+// import ThemeProvider from '../components/themeprovider'
 
 import { faTimes, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import Alert from '@mui/material/Alert';
+import { Alert, AlertColor } from '@mui/material';
 
 import Timer from '@/components/Timer'
+
+// define a list of valid alert severities
+// const validAlertSeverities: AlertColor[] = ['error', 'warning', 'info', 'success'];
+
+// define a list of valid alert severities
+// const validAlertSeverities: AlertColor[] = ['error', 'warning', 'info', 'success'];
+
 
 
 const inter = Inter({ subsets: ['latin'] })
 import { useState, useEffect, useContext } from 'react';
 
 export default function Home() {
+
   const [isDarkMode, setIsDarkMode] = useState(false); // State for tracking dark mode
 
   // defining the array of bdays
@@ -26,27 +36,30 @@ export default function Home() {
 
   const [todaybirthdays, settodayBirthdays] = useState([])
 
-  
-  
-  
-  
+
+
+
+
   // BIRTHDAY CARD --------------------------------------
-  
+
   // popup card--------------------------------
-  function PopupCard({ id, index, name, picUrl, dob, bday, bio,popupOpen, openPopup, closePopup, min, sec }) {
+  // function PopupCard({ id, index, name, picUrl, dob, bday, bio, popupOpen, openPopup, closePopup, min, sec }: { id: string, index: any, name: string, picUrl: string, dob: string, bday: string, bio: string, popupOpen: boolean, openPopup: any, closePopup: any, min: string, sec: string }) {
+  function PopupCard({ id, index, name, picUrl, dob, bday, bio, popupOpen, openPopup, closePopup, min, sec }) {
+
     const [showPopup, setShowPopup] = useState(false);
     const [editMode, setEditMode] = useState(false)
 
-    const [alertSeverity, setAlertSeverity] = useState('error');
+    const [alertSeverity, setAlertSeverity] = useState();
     const [alertMessage, setAlertMessage] = useState('');
     const [isAlertOpen, setIsAlertOpen] = useState(false);
 
     // const [alerttext,setalertText] = useState('')
     // const [alertcolor,setalertColor] = useState('text-green-900')
 
-    const [hidesubmit,sethideSubmit] = useState(false)
-    
-    const [pic, setPic] = useState(null);
+    const [hidesubmit, sethideSubmit] = useState(false)
+    const [deleteFlag, setDeleteFlag] = useState(false);
+
+    const [pic, setPic] = useState<File | null>(null);
 
     const [formData, setFormData] = useState({
       id: id,
@@ -56,12 +69,19 @@ export default function Home() {
       bio: bio
     });
 
-    const handleSubmit = async (e,val) => {
+    const handleDelete = () => {
+      setDeleteFlag(true);
+    };
+
+    // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, val: string): Promise<void> => {
+    const handleSubmit = async (e, val)=> {
       e.preventDefault();
+    
+      // e.preventDefault();
       let todelete = false
 
       // console.log(event.currentTarget.value)
-      if (val === 'delete'){
+      if (val === 'delete') {
         todelete = true
       } else {
         todelete = false
@@ -74,7 +94,7 @@ export default function Home() {
       data.append('name', formData.name);
       data.append('bday', formData.bday);
       data.append('bio', formData.bio);
-      data.append('del', todelete);
+      data.append('del', todelete.toString());
 
       // append the pic to the object
       if (pic !== null) {
@@ -93,22 +113,24 @@ export default function Home() {
         const resp = await response.json();
         setAlertMessage(resp.message)
         console.log(resp)
-        
+
         if (resp.status === 201) {
           console.log('201')
           setAlertSeverity('success')
         } else {
           setAlertSeverity('warning')
         }
-        
+
         setIsAlertOpen(true)
-        
+
         setTimeout(() => {
-            setIsAlertOpen(false)
+          setIsAlertOpen(false)
           // setalertText('')
         }, 2000);
       } catch (error) {
-        console.log(error.message)
+        if (error instanceof Error){
+          console.log(error.message)
+        }
       }
 
 
@@ -121,7 +143,7 @@ export default function Home() {
 
     useEffect(() => {
       openPopup();
-    }, []);
+    }, [openPopup]);
 
     const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
     const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
@@ -141,7 +163,7 @@ export default function Home() {
             </div>
             {editMode ? (
               // FORM--------------------------------------
-              <form className={`${cardBg} p-4 rounded-md shadow-md`} onSubmit={handleSubmit}>
+              <form className={`${cardBg} p-4 rounded-md shadow-md`}>
                 <>{isAlertOpen && <Alert severity={alertSeverity}>{alertMessage}</Alert>}</>
                 {/* <p className={`text-center ${alertcolor}`}>{alerttext}</p> */}
                 <div className="mb-4">
@@ -178,7 +200,11 @@ export default function Home() {
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="image"
                     type="file"
-                    onChange={(event) => setPic(event.target.files[0])}
+                    onChange={(event) => {
+                      if (event.target.files !== null) {
+                        setPic(event.target.files[0]);
+                      }
+                    }}
                   />
                 </div>
                 <div className="mb-4">
@@ -189,7 +215,7 @@ export default function Home() {
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="bio"
                     placeholder="Bio - less than 10 words"
-                    rows="3"
+                    rows={3}
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   ></textarea>
@@ -208,7 +234,7 @@ export default function Home() {
                     value='delete'
                     className={`bg-red-500 text-white p-2 rounded-md ${textColor}`}
                     onClick={(e) => {
-                      {hidesubmit && handleSubmit(e,'delete')}
+                      { hidesubmit && handleSubmit(e, 'delete') }
                       sethideSubmit(true)
                     }}
                   >
@@ -241,7 +267,7 @@ export default function Home() {
   }
 
 
-  const TodayBirthday = ({ person, index }) => {
+  const TodayBirthday = ({ key, person, index }) => {
 
     const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
     const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
@@ -303,7 +329,7 @@ export default function Home() {
             <Timer expiryTimestamp={dob} min={min} sec={sec} />
           </div>
         </div>
-        {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} popupOpen={popupOpen} openPopup={openPopup} closePopup={closePopup}  min={min} sec={sec} />}
+        {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} popupOpen={popupOpen} openPopup={openPopup} closePopup={closePopup} min={min} sec={sec} />}
       </>
     );
   }
@@ -330,7 +356,7 @@ export default function Home() {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-0 sm:p-4">
         {people.map((person, index) => (
-          <BirthdayCard index={index} cat={person.category} id={person._id} name={person.name} picUrl={person.pic} dob={person.dob} bday={person.bday} bio={person.bio} min={person.min} sec={person.sec} />
+          <BirthdayCard index={index} key={index} cat={person.category} id={person._id} name={person.name} picUrl={person.pic} dob={person.dob} bday={person.bday} bio={person.bio} min={person.min} sec={person.sec} />
         ))}
 
       </div>
@@ -463,7 +489,7 @@ export default function Home() {
       <div className='flex flex-col sm:flex-row flex-wrap items-center sm:items-start justify-center space-x-2 py-5'>
         {todaybirthdays && <>
           {todaybirthdays.map((person, index) => {
-            return <TodayBirthday person={person} index={index} />
+            return <TodayBirthday key={index} person={person} index={index} />
           })}
         </>
         }

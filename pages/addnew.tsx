@@ -1,6 +1,22 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
-import Alert from '@mui/material/Alert';
+import { Alert, AlertColor } from '@mui/material';
+// import { AlertColor } from '@material-ui/core';
+
+import { ChangeEvent, FormEvent } from "react";
+
+// define a list of valid alert severities
+const validAlertSeverities: AlertColor[] = ['error', 'warning', 'info', 'success'];
+
+
+
+interface FormData {
+    name: string;
+    bday: string;
+    bio: string;
+    pic: File | null;
+}
+
 
 function AddNew() {
 
@@ -16,7 +32,7 @@ function AddNew() {
     const appBgClass = isDarkMode ? 'bg-dark' : 'bg-light';
     const appTextClass = isDarkMode ? 'text-white' : 'text-black';
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormData>({
         name: '',
         bday: '',
         bio: '',
@@ -24,24 +40,28 @@ function AddNew() {
     });
 
     // dialogue box for messages
-    const [alertSeverity, setAlertSeverity] = useState('error');
+    const [alertSeverity, setAlertSeverity] = useState<AlertColor>();
     const [alertMessage, setAlertMessage] = useState('');
     const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-    const toggleDialog = () => {
-        setIsDialogOpen(!isDialogOpen);
+    const handleChange = async (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): Promise<void> => {
+        const { name, value, type } = e.target;
+        if (type === 'file') {
+            const files = (e.target as HTMLInputElement).files;
+            setFormData({
+                ...formData,
+                [name]: files?.[0]
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value
+            });
+        }
     };
 
 
-    const handleChange = async (event) => {
-        const { name, value, type, files } = event.target;
-        setFormData({
-            ...formData,
-            [name]: type === 'file' ? files[0] : value
-        });
-    };
-
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         // Check if name and bday fields are empty
@@ -88,8 +108,10 @@ function AddNew() {
             }
 
         } catch (error) {
-            setAlertSeverity('warning');
-            setAlertMessage(error.message);
+            if (error instanceof Error) {
+                setAlertSeverity('warning');
+                setAlertMessage(error.message);
+            }
         }
         setIsAlertOpen(true);
 
@@ -104,34 +126,33 @@ function AddNew() {
         <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
             <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
             <div className={`flex items-center justify-center w-4/5 sm:w-1/2 mx-auto pt-20 ${appBgClass}`}>
-                <form onSubmit={handleSubmit} class="max-w-md mx-auto">
+                <form onSubmit={handleSubmit} className="max-w-md mx-auto">
                     <>{isAlertOpen && <Alert severity={alertSeverity}>{alertMessage}</Alert>}</>
                     <div className="mt-6">
-                        <label for="name" className={`block text-lg font-medium ${appTextClass}`}>
+                        <label htmlFor="name" className={`block text-lg font-medium ${appTextClass}`}>
                             Name
                         </label>
                         <div className="mt-2">
-                            <input type="text" id="name" name="name" value={formData.name} onChange={handleChange}  required className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                            <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                         </div>
                     </div>
                     <div className="mt-6">
-                        <label for="bday" className={`block text-lg font-medium ${appTextClass}`}>
+                        <label htmlFor="bday" className={`block text-lg font-medium ${appTextClass}`}>
                             Birthday
                         </label>
                         <div className="mt-2">
-                            <input type="text" id="bday" name="bday" value={formData.bday} onChange={handleChange}  required placeholder="e.g. Dec 25" className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                            <input type="text" id="bday" name="bday" value={formData.bday} onChange={handleChange} required placeholder="e.g. Dec 25" className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                         </div>
                     </div>
                     <div className="mt-6">
-                        <label for="bio" className={`lock text-lg font-medium t${appTextClass}`}>
+                        <label htmlFor="bio" className={`lock text-lg font-medium t${appTextClass}`}>
                             Bio
                         </label>
                         <div className="mt-2">
-                            <textarea id="bio" name="bio" placeholder='Bio - less than 10 words' value={formData.bio} onChange={handleChange}  className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-                        </div>
+                            <textarea id="bio" name="bio" placeholder='Bio - less than 10 words' value={formData.bio} onChange={(e: ChangeEvent<HTMLTextAreaElement>) => handleChange(e)} className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea></div>
                     </div>
                     <div className="mt-6">
-                        <label for="pic" className={`lock text-lg font-medium t${appTextClass}`}>
+                        <label htmlFor="pic" className={`lock text-lg font-medium t${appTextClass}`}>
                             Picture
                         </label>
                         <div className="mt-2">
