@@ -531,16 +531,15 @@ export default function Home() {
 
       const dgc = Number(localStorage.getItem('dialogcount'));
       if(dgc){
+        if(dgc>2){
+          setShowDialog(false);
+        }
         localStorage.setItem('dialogcount', Number(dgc)+1);
       } else {
         localStorage.setItem('dialogcount', Number(dialogcount)+1);
       }
       // If the dialog has been shown before, don't show it again
 
-      if(dgc>2){
-
-        setShowDialog(false);
-      }
     } else {
       // If the dialog hasn't been shown before, show it and set the hasShownDialog flag
       localStorage.setItem('hasShownDialog', true);
