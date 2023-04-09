@@ -22,7 +22,7 @@ function Review() {
     const [isDarkMode, setIsDarkMode] = useState(false); // State for tracking dark mode
 
 
-    const [password, setPassword] = useState('correctpassword');
+    const [password, setPassword] = useState('sajidispassword');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [inputPassword, setInputPassword] = useState('');
 
