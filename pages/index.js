@@ -38,6 +38,7 @@ export default function Home() {
   const [todaybirthdays, settodayBirthdays] = useState([])
 
 
+  const [search,setSearch] = useState('')
 
 
 
@@ -63,6 +64,8 @@ export default function Home() {
     const [showprogress, setshowProgress] = useState(false)
 
     const [pic, setPic] = useState(null);
+
+  
 
     const [formData, setFormData] = useState({
       id: id,
@@ -382,7 +385,9 @@ export default function Home() {
   // BIRTHDAY SEARCH ALGORITHM..........................
   const searchBdays = (e) => {
     const searchValue = e.currentTarget.value.toLowerCase();
-    console.log(searchValue)
+    // console.log(searchValue)
+
+    setSearch(searchValue)
 
     if (searchValue === '') {
       return setPeople(initialPeople)
@@ -514,7 +519,7 @@ export default function Home() {
             <CircularProgress />
           </Box>
         ) : (<><div className='flex flex-col sm:flex-row flex-wrap items-center sm:items-start justify-center space-x-2 py-5'>
-          {todaybirthdays && <>
+          {(todaybirthdays && search.length === 0) && <>
             {todaybirthdays.map((person, index) => {
               return <TodayBirthday key={index} person={person} index={index} />
             })}
