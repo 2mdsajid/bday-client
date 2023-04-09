@@ -4,7 +4,7 @@ import Alert from '@mui/material/Alert';
 
 import Header from '@/components/Header';
 
-import Cookies from 'js-cookie';
+//import Cookies from 'js-cookie';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box'
