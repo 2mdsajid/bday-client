@@ -112,7 +112,7 @@ function Review() {
 
     function card(person, index) {
         return (<>
-            <div key={person._id} className={`${cardBg} shadow-md rounded-md p-2 sm:p-4 m-1 w-[10rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
+            <div key={person._id} className={`${cardBg} shadow-md rounded-md p-2 sm:p-4 m-1 w-[13.5rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
                 <img src={person.pic ? person.pic : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${person.name}'s picture`} className="w-full object-cover rounded-t-md" />
                 <div className="p-2 sm:p-4 text-center sm:text-left">
                     <div className={`flex flex-col items-center justify-between text-md font-medium ${appTextClass}`}>
@@ -188,7 +188,7 @@ function Review() {
     useEffect(() => {
         const authenticated = Cookies.get('authenticated');
         if (authenticated === 'true') {
-            //setIsAuthenticated(true);
+            setIsAuthenticated(true);
         }
     }, []);
 
@@ -248,7 +248,7 @@ function Review() {
                 </div>
             ) : (<div className='w-full min-h-screen pt-[5rem] px-4'>
                 {/* BUTTONS ---------------------------------- */}
-                <div className="flex justify-center space-x-4 mt-4">
+                <div className="flex justify-center flex-wrap space-x-4 space-y-2 mt-4">
                     <button
                         className={`py-2 px-4 rounded-md shadow hover:bg-green-600 transition duration-300 ${show === 'review' ? 'bg-green-500 text-white' : 'bg-gray-400 text-gray-600'
                             }`}
@@ -282,7 +282,7 @@ function Review() {
                 <>{isAlertOpen && <Alert severity={alertSeverity}>{alertMessage}</Alert>}</>
 
                 {/* CARDS--------------------------------------------------- */}
-                <div className="flex w-full sm:flex-row flex-wrap items-start justify-center space-x-2 py-5">
+                <div className="flex w-full sm:flex-row flex-wrap items-start justify-center space-x-2 py-3">
                     {show === 'review' &&
                         reviewpersons.map((person, index) => (
                             card(person, index)
