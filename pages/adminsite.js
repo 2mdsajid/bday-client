@@ -162,6 +162,8 @@ function Review() {
                 setnewPersons(newPersons);
                 setdeletePersons(deletePersons);
 
+                console.log(reviewPersons)
+
                 setshowProgress(false)
 
             } catch (error) {
