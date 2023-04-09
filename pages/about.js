@@ -115,7 +115,7 @@ const About = () => {
                 <div className='mb-10'>
                     <h2 className="text-2xl font-bold mb-2">What to Do</h2>
                     <p className="text-lg mb-4">
-                        Our application allows you to add your friend's birthdays and get a
+                        Our application allows you to add your friend&rsquo;s birthdays and get a
                         countdown until their special day. You can also search for your
                         friends and see their upcoming birthdays.
                     </p>
@@ -132,19 +132,19 @@ const About = () => {
                         </AccordionSummary>
                         <AccordionDetails>
                             <ul className="list-disc ml-4">
-                                <li className='font-medium text-xl mt-2'>How to change photo</li>
+                                <li className='font-medium text-xl mt-2'>How to change photo ?</li>
                                 <ol className="list-decimal ml-4">
                                     <li>Click your profile card</li>
                                     <li>Click the edit icon</li>
                                     <li>Choose your image. Choose a 1:1 image as far as possible</li>
                                 </ol>
-                                <li className='font-medium text-xl mt-2'>How to delete</li>
+                                <li className='font-medium text-xl mt-2'>How to delete your profile card ?</li>
                                 <ol className="list-decimal ml-4">
                                     <li>Click your profile card</li>
                                     <li>Click the edit icon</li>
-                                    <li>Double-click "Delete my profile"</li>
+                                    <li>Double-click &rdquo;Delete my profile&rdquo;</li>
                                 </ol>
-                                <li className='font-medium text-xl mt-2'>How to update bio</li>
+                                <li className='font-medium text-xl mt-2'>How to update bio ?</li>
                                 <ol className="list-decimal ml-4">
                                     <li>Click your profile card</li>
                                     <li>Click the edit icon</li>
@@ -236,7 +236,7 @@ const About = () => {
                 </form>
                 <div className="text-lg italic mt-10 mb-10">
                     <p>
-                        <strong>Data Source:</strong> All birthday data is collected from public profiles such as Facebook and Instagram. No privacy was harmed during the data collection. However, please note that the dates may be wrong. If you want to opt-out of our service, please contact us or respond through the site by clicking "Delete My Profile".
+                        <strong>Data Source:</strong> All birthday data is collected from public profiles such as Facebook and Instagram. No privacy was harmed during the data collection. However, please note that the dates may be wrong. If you want to opt-out of our service, please contact us or respond through the site by clicking &rdquo;Delete My Profile&rdquo;.
                     </p>
                 </div>
             </div>
