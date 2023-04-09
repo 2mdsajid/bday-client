@@ -179,7 +179,7 @@ function Review() {
     // dark and light mode
     useEffect(() => {
         const savedIsDarkMode = Cookies.get('isDarkMode');
-        setIsDarkMode(savedIsDarkMode === 'true');
+        //setIsDarkMode(savedIsDarkMode === 'true');
     }, []);
 
     const handleShowReview = () => setShow('review');
