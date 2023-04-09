@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import Header from '@/components/Header'
+import Link from 'next/link'
 
 import { FormEventHandler } from 'react';
 
@@ -18,8 +19,11 @@ import { Alert, AlertColor } from '@mui/material';
 
 import Timer from '@/components/Timer'
 
+// clear the input field
+import { XIcon } from '@heroicons/react/outline';
+
 // LOCAL STORAGE FOR UNIQUE USER ID
-import {storelocalStorage,loadlocalStorage} from '../components/functions'
+import { storelocalStorage, loadlocalStorage } from '../components/functions'
 
 // COOKIES TO STORE THE THEME MODE
 import Cookies from 'js-cookie';
@@ -38,7 +42,11 @@ export default function Home() {
   const [todaybirthdays, settodayBirthdays] = useState([])
 
 
-  const [search,setSearch] = useState('')
+  const [search, setSearch] = useState('')
+
+  // to show a dialogue at the beginning
+  const [showDialog, setShowDialog] = useState(true);
+  const [dialogcount,setdialogCount] = useState(0)
 
 
 
@@ -65,7 +73,7 @@ export default function Home() {
 
     const [pic, setPic] = useState(null);
 
-  
+
 
     const [formData, setFormData] = useState({
       id: id,
@@ -174,9 +182,9 @@ export default function Home() {
               // FORM--------------------------------------
               <form className={`${cardBg} p-4 rounded-md shadow-md`}>
 
-              {/* to show the progress bar before the response*/}
+                {/* to show the progress bar before the response*/}
                 <>{showprogress && <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <CircularProgress color="success"/>
+                  <CircularProgress color="success" />
                 </Box>}
                 </>
 
@@ -336,7 +344,7 @@ export default function Home() {
 
     return (
       <>
-        <div key={id} onClick={openPopup} className={`${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
+        <div key={id} onClick={openPopup} className={`${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] sm:w-[15rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
           <img src={picUrl ? picUrl : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
           <div className="p-2 sm:p-4 text-center sm:text-left">
             <div className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}>
@@ -490,6 +498,7 @@ export default function Home() {
 
 
   useEffect(() => {
+    console.log('render useeffect')
     fetchData()
     // filterBdays()
   }, [])
@@ -499,19 +508,95 @@ export default function Home() {
     const savedIsDarkMode = Cookies.get('isDarkMode');
     setIsDarkMode(savedIsDarkMode === 'true');
   }, []);
-  
+
+  // to show dialogue box at beginning
+  // useEffect(() => {
+  //   // Check if the dialog has been shown before
+
+  // }, []);
+
+  useEffect(() => {
+    setdialogCount(Number(dialogcount)+1)
+    // localStorage.setItem('dialogcount', dialogcount);
+
+    // Add or remove the modal-open class on the body element depending on whether the dialog is open
+    if (showDialog) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+
+    const hasShownDialog = localStorage.getItem('hasShownDialog');
+    if (hasShownDialog) {
+
+      const dgc = Number(localStorage.getItem('dialogcount'));
+      if(dgc){
+        localStorage.setItem('dialogcount', Number(dgc)+1);
+      } else {
+        localStorage.setItem('dialogcount', Number(dialogcount)+1);
+      }
+      // If the dialog has been shown before, don't show it again
+
+      if(dgc>2){
+
+        setShowDialog(false);
+      }
+    } else {
+      // If the dialog hasn't been shown before, show it and set the hasShownDialog flag
+      localStorage.setItem('hasShownDialog', true);
+      setShowDialog(true)
+    }
+
+  }, [showDialog]);
 
 
   return (
     <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
       <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+      {/* dialogue box */}
+      {showDialog && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75">
+          <div className="relative p-8 mx-auto mt-20 bg-white rounded-md shadow-lg w-1/2">
+            <button className="absolute top-0 right-0 m-4 text-gray-600 hover:text-gray-800" onClick={() => setShowDialog(false)}>
+              <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <p className="text-gray-800">
+              Please visit the{' '}
+              <Link href="/about" className="underline cursor-pointer">about
+              </Link>{' '}
+              page.
+            </p></div>
+        </div>
+      )}
+      {/* dialogue ends here */}
       <div className={`flex items-center justify-center w-1/2 mx-auto pt-20 ${appBgClass}`}>
-        <input
-          className={`bg-gray-200 focus:bg-white border-transparent focus:border-gray-300 w-full rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none text-black`}
-          type="text"
-          placeholder="Search Your Name..."
-          onChange={searchBdays}
-        />
+        <div className="relative w-full">
+          <input
+            className={`bg-gray-200 focus:bg-white border-transparent focus:border-gray-300 w-full rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none text-black`}
+            type="text"
+            placeholder="Search Your Name..."
+            onChange={searchBdays}
+            value={search}
+          />
+          {search && (
+            <button
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-700 hover:text-gray-900"
+              onClick={() => {
+                setSearch('')
+                setPeople(initialPeople)
+              }}
+            >
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  className="heroicon-ui"
+                  d="M9.29289,12 L4.64645,7.35355 C4.45118,7.15829 4.45118,6.84171 4.64645,6.64645 C4.84171,6.45118 5.15829,6.45118 5.35355,6.64645 L10,11.29289 L14.64645,6.64645 C14.84171,6.45118 15.15829,6.45118 15.35355,6.64645 C15.5488,6.84171 15.5488,7.15829 15.35355,7.35355 L10.70711,12 L15.35355,16.64645 C15.5488,16.8417 15.5488,17.1583 15.35355,17.3536 C15.15829,17.5488 14.84171,17.5488 14.64645,17.3536 L10,12.70711 L5.35355,17.3536 C5.15829,17.5488 4.84171,17.5488 4.64645,17.3536 C4.45118,17.1583 4.45118,16.8417 4.64645,16.64645 L9.29289,12 Z"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
       <div>
         {people.length === 0 ? (

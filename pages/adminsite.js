@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-import Alert from '@mui/material/Alert';
 
 import Header from '@/components/Header';
 
@@ -8,6 +7,7 @@ import Cookies from 'js-cookie';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert';
 
 function Review() {
     const [reviewpersons, setReviewPersons] = useState([]);
@@ -27,6 +27,9 @@ function Review() {
     const [inputPassword, setInputPassword] = useState('');
 
     const [showprogress, setshowProgress] = useState(true)
+
+    // store suggestions
+    const [suggestions, setSuggestions] = useState([])
 
     function handleInputChange(event) {
         setInputPassword(event.target.value);
@@ -61,6 +64,7 @@ function Review() {
 
         if (type === 'publish') {
             person.published = true;
+            person.review = false;
             person.id = person._id
         } else if (type === 'delete') {
             person.todelete = true;
@@ -117,25 +121,24 @@ function Review() {
                         <span className="text-gray-600 dark:text-gray-400 text-sm capitalize">{person.bio}</span>
                     </div>
                     <div className="mt-4 flex justify-center space-x-4">
-                        {person.published === false && (
+                        {(person.published === false) && (
                             <>
                                 <button onClick={() => handleApprove(person, 'publish')} className="p-1.5 sm:px-4 sm:py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition duration-300">Publish</button>
-                                <button onClick={() => handleApprove(person, 'reject')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button>
+                                {/* <button onClick={() => handleApprove(person, 'reject')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button> */}
                             </>
                         )}
                         {(person.review === true && person.todelete === true) && (
                             <>
                                 <button onClick={() => handleApprove(person, 'delete')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Delete</button>
-                                <button onClick={() => handleApprove(person, 'reject')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button>
+                                {/* <button onClick={() => handleApprove(person, 'reject')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button> */}
                             </>
                         )}
-                        {(person.review === true && person.todelete === false) && (
+                        {(person.review === true && person.todelete === false && person.published === true) && (
                             <>
                                 <button onClick={() => handleApprove(person, 'approve')} className="p-1.5 sm:px-4 sm:py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition duration-300">Approve</button>
-                                {/* <button onClick={() => { }} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button> */}
-                                <button onClick={() => handleApprove(person, 'reject')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button>
                             </>
                         )}
+                        <button onClick={() => handleApprove(person, 'reject')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button>
                     </div>
 
                 </div>
@@ -151,8 +154,8 @@ function Review() {
                 const data = await response.json();
 
                 const persons = data.data;
-                const reviewPersons = persons.filter(person => person.review === true && person.todelete === false);
-                const newPersons = persons.filter(person => person.published === false);
+                const reviewPersons = persons.filter(person => person.review === true && person.todelete === false && person.published === true);
+                const newPersons = persons.filter(person => person.published === false && person.review === true);
                 const deletePersons = persons.filter(person => person.review === true && person.todelete === true);
 
                 setReviewPersons(reviewPersons);
@@ -170,6 +173,19 @@ function Review() {
     }, []);
 
     useEffect(() => {
+        async function getSuggestions() {
+            try {
+                const response = await fetch('/getsuggestions');
+                const data = await response.json();
+                setSuggestions(data.data)
+            } catch (error) {
+                console.log(error.message);
+            }
+        }
+        getSuggestions()
+    }, [])
+
+    useEffect(() => {
         const authenticated = Cookies.get('authenticated');
         if (authenticated === 'true') {
             setIsAuthenticated(true);
@@ -185,6 +201,7 @@ function Review() {
     const handleShowReview = () => setShow('review');
     const handleShowNew = () => setShow('new');
     const handleShowDelete = () => setShow('delete');
+    const handleShowSuggestions = () => setShow('suggestions');
 
     if (!isAuthenticated) {
         return (
@@ -244,14 +261,21 @@ function Review() {
                             }`}
                         onClick={handleShowNew}
                     >
-                        New
+                        Newly Added
                     </button>
                     <button
                         className={`py-2 px-4 rounded-md shadow hover:bg-green-600 transition duration-300 ${show === 'delete' ? 'bg-green-500 text-white' : 'bg-gray-400 text-gray-600'
                             }`}
                         onClick={handleShowDelete}
                     >
-                        Delete
+                        Delete Requests
+                    </button>
+                    <button
+                        className={`py-2 px-4 rounded-md shadow hover:bg-green-600 transition duration-300 ${show === 'suggestions' ? 'bg-green-500 text-white' : 'bg-gray-400 text-gray-600'
+                            }`}
+                        onClick={handleShowSuggestions}
+                    >
+                        Suggestions
                     </button>
                 </div>
                 {/* ALERT ------------------------------- */}
@@ -271,6 +295,28 @@ function Review() {
                         deletepersons.map((person, index) => (
                             card(person, index)
                         ))}
+                    {show === 'suggestions' &&
+                        <div className="container mx-auto my-10">
+                            {/* <h2 className="text-3xl font-bold mb-6 text-center">Suggestions</h2> */}
+                            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-content-center">
+                                {suggestions.map((suggestion) => (
+                                    <div
+                                        key={suggestion._id}
+                                        className={` ${cardBg} ${appTextClass} rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300`}
+                                    >
+                                        <h3 className={`text-xl font-bold mb-4 `}>{suggestion.name}</h3>
+                                        <p className=" mb-2">
+                                            <span className="font-bold">Email:</span> {suggestion.email}
+                                        </p>
+                                        <p className=" mb-2">
+                                            <span className="font-bold">Suggestion:</span> {suggestion.suggestion}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                    }
                 </div>
             </div>)}
 

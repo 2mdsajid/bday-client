@@ -23,7 +23,7 @@ function Timer({ expiryTimestamp, min, sec }: TimerProps) {
   } = useTimer({ expiryTimestamp: expiryDate });
 
   return (
-    <div className='text-sm sm:text-lg'>
+    <div className='text-sm md:text-lg'>
       {`${days}D ${hours}H ${convertToTwoDigit(minutes)}M ${convertToTwoDigit(seconds)}S`}
     </div>
   )

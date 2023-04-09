@@ -58,9 +58,9 @@ const Header = ({ isDarkMode, toggleDarkMode }: HeaderProps) => {
                             Add New
                         </li>
                     </Link>
-                    <Link href="/review" className={`block py-2 ${navTextClass}`}>
+                    <Link href="/about" className={`block py-2 ${navTextClass}`}>
                         <li>
-                            Admin
+                            About
                         </li>
                     </Link>
                 </ul>
@@ -75,9 +75,9 @@ const Header = ({ isDarkMode, toggleDarkMode }: HeaderProps) => {
                                 Add New
                             </li>
                         </Link>
-                        <Link href="/review" className={`${navTextClass}`}>
+                        <Link href="/about" className={`${navTextClass}`}>
                             <li>
-                                Admin
+                                About
                             </li>
                         </Link>
                     </ul>

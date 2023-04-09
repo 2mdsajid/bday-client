@@ -2,12 +2,15 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = {
   reactStrictMode: true,
+  devIndicators: {
+    autoPrerender: false,
+  },
 
   async rewrites() {
     return [
       {
         source: '/:path*',
-        destination: 'https://birthday.adaptable.app/:path*', // Replace with your backend server address
+        destination: 'http://localhost:4001/:path*', // Replace with your backend server address
       },
     ];
   },
