@@ -4,7 +4,7 @@ import Alert from '@mui/material/Alert';
 
 import Header from '@/components/Header';
 
-//import Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box'
@@ -172,14 +172,14 @@ function Review() {
     useEffect(() => {
         const authenticated = Cookies.get('authenticated');
         if (authenticated === 'true') {
-            setIsAuthenticated(true);
+            //setIsAuthenticated(true);
         }
     }, []);
 
     // dark and light mode
     useEffect(() => {
         const savedIsDarkMode = Cookies.get('isDarkMode');
-        //setIsDarkMode(savedIsDarkMode === 'true');
+        setIsDarkMode(savedIsDarkMode === 'true');
     }, []);
 
     const handleShowReview = () => setShow('review');
