@@ -11,24 +11,25 @@ import { FormEventHandler } from 'react';
 import { faTimes, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box'
+
 import { Alert, AlertColor } from '@mui/material';
 
 import Timer from '@/components/Timer'
 
-// define a list of valid alert severities
-// const validAlertSeverities: AlertColor[] = ['error', 'warning', 'info', 'success'];
+// LOCAL STORAGE FOR UNIQUE USER ID
+import {storelocalStorage,loadlocalStorage} from '../components/functions'
 
-// define a list of valid alert severities
-// const validAlertSeverities: AlertColor[] = ['error', 'warning', 'info', 'success'];
-
-
+// COOKIES TO STORE THE THEME MODE
+import Cookies from 'js-cookie';
 
 const inter = Inter({ subsets: ['latin'] })
 import { useState, useEffect, useContext } from 'react';
 
 export default function Home() {
 
-  const [isDarkMode, setIsDarkMode] = useState(false); // State for tracking dark mode
+  const [isDarkMode, setIsDarkMode] = useState(true); // State for tracking dark mode
 
   // defining the array of bdays
   const [people, setPeople] = useState([]);
@@ -59,6 +60,8 @@ export default function Home() {
     const [hidesubmit, sethideSubmit] = useState(false)
     const [deleteFlag, setDeleteFlag] = useState(false);
 
+    const [showprogress, setshowProgress] = useState(false)
+
     const [pic, setPic] = useState(null);
 
     const [formData, setFormData] = useState({
@@ -74,9 +77,11 @@ export default function Home() {
     };
 
     // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, val: string): Promise<void> => {
-    const handleSubmit = async (e, val)=> {
+    const handleSubmit = async (e, val) => {
       e.preventDefault();
-    
+
+      setshowProgress(true)
+
       // e.preventDefault();
       let todelete = false
 
@@ -122,13 +127,14 @@ export default function Home() {
         }
 
         setIsAlertOpen(true)
+        setshowProgress(false)
 
         setTimeout(() => {
           setIsAlertOpen(false)
           // setalertText('')
         }, 2000);
       } catch (error) {
-        if (error instanceof Error){
+        if (error instanceof Error) {
           console.log(error.message)
         }
       }
@@ -164,6 +170,14 @@ export default function Home() {
             {editMode ? (
               // FORM--------------------------------------
               <form className={`${cardBg} p-4 rounded-md shadow-md`}>
+
+              {/* to show the progress bar before the response*/}
+                <>{showprogress && <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <CircularProgress color="success"/>
+                </Box>}
+                </>
+
+                {/* to show the alert after getting the response */}
                 <>{isAlertOpen && <Alert severity={alertSeverity}>{alertMessage}</Alert>}</>
                 {/* <p className={`text-center ${alertcolor}`}>{alerttext}</p> */}
                 <div className="mb-4">
@@ -238,7 +252,7 @@ export default function Home() {
                       sethideSubmit(true)
                     }}
                   >
-                    {hidesubmit ? 'Click Again' : 'Delete My Profile'}
+                    {hidesubmit ? 'Confirm Deletion' : 'Delete My Profile'}
                   </button>
                 </div>
               </form>
@@ -275,7 +289,7 @@ export default function Home() {
     // getBirthdayQuote()
 
     return (
-      <div className={`${cardBg} shadow-md rounded-md p-0 my-2 h-full w-[18rem] md:w-96 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
+      <div className={`${cardBg} shadow-md rounded-md py-2 my-2 h-full w-[18rem] md:w-96 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
         <div className="relative">
           <img src={person.pic ? person.pic : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${person.name}'s picture`} className="w-4/5 mx-auto object-cover rounded-md" />
           {/* <div className="absolute inset-0 bg-opacity-70 bg-gray-900 dark:bg-gray-800 rounded-md"></div> */}
@@ -390,6 +404,7 @@ export default function Home() {
   // Function to toggle dark mode
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
+    Cookies.set('isDarkMode', !isDarkMode);
   }
 
   // Define the class names for dark and light mode
@@ -474,6 +489,13 @@ export default function Home() {
     // filterBdays()
   }, [])
 
+  // to store the dark-light mode in cookies
+  useEffect(() => {
+    const savedIsDarkMode = Cookies.get('isDarkMode');
+    setIsDarkMode(savedIsDarkMode === 'true');
+  }, []);
+  
+
 
   return (
     <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
@@ -486,16 +508,22 @@ export default function Home() {
           onChange={searchBdays}
         />
       </div>
-      <div className='flex flex-col sm:flex-row flex-wrap items-center sm:items-start justify-center space-x-2 py-5'>
-        {todaybirthdays && <>
-          {todaybirthdays.map((person, index) => {
-            return <TodayBirthday key={index} person={person} index={index} />
-          })}
-        </>
-        }
-      </div>
-      <div className='flex items-center justify-center pt-4'>
-        {people && <BirthdayCards />}
+      <div>
+        {people.length === 0 ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+            <CircularProgress />
+          </Box>
+        ) : (<><div className='flex flex-col sm:flex-row flex-wrap items-center sm:items-start justify-center space-x-2 py-5'>
+          {todaybirthdays && <>
+            {todaybirthdays.map((person, index) => {
+              return <TodayBirthday key={index} person={person} index={index} />
+            })}
+          </>
+          }
+        </div>
+          <div className='flex items-center justify-center pt-4'>
+            {people && <BirthdayCards />}
+          </div></>)}
       </div>
     </div>
   );

@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import { Alert, AlertColor } from '@mui/material';
 // import { AlertColor } from '@material-ui/core';
 
 import { ChangeEvent, FormEvent } from "react";
+
+import Cookies from 'js-cookie';
+
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box'
 
 // define a list of valid alert severities
 const validAlertSeverities: AlertColor[] = ['error', 'warning', 'info', 'success'];
@@ -22,6 +27,7 @@ function AddNew() {
 
     const [isDarkMode, setIsDarkMode] = useState(false); // State for tracking dark mode
 
+    const [showprogress, setshowProgress] = useState(false)
 
     // Function to toggle dark mode
     const toggleDarkMode = () => {
@@ -63,6 +69,7 @@ function AddNew() {
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setshowProgress(true)
 
         // Check if name and bday fields are empty
         if (formData.name.trim() === '' || formData.bday.trim() === '') {
@@ -114,6 +121,7 @@ function AddNew() {
             }
         }
         setIsAlertOpen(true);
+        setshowProgress(false)
 
         setTimeout(() => {
             setIsAlertOpen(false);
@@ -122,11 +130,22 @@ function AddNew() {
 
     };
 
+    // to store the dark-light mode in cookies
+    useEffect(() => {
+        const savedIsDarkMode = Cookies.get('isDarkMode');
+        setIsDarkMode(savedIsDarkMode === 'true');
+    }, []);
+
+
     return (
         <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
             <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
             <div className={`flex items-center justify-center w-4/5 sm:w-1/2 mx-auto pt-20 ${appBgClass}`}>
                 <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+                    <>{showprogress && <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <CircularProgress color="success" />
+                    </Box>}
+                    </>
                     <>{isAlertOpen && <Alert severity={alertSeverity}>{alertMessage}</Alert>}</>
                     <div className="mt-6">
                         <label htmlFor="name" className={`block text-lg font-medium ${appTextClass}`}>

@@ -4,6 +4,11 @@ import Alert from '@mui/material/Alert';
 
 import Header from '@/components/Header';
 
+import Cookies from 'js-cookie';
+
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box'
+
 function Review() {
     const [reviewpersons, setReviewPersons] = useState([]);
     const [newpersons, setnewPersons] = useState([])
@@ -21,6 +26,8 @@ function Review() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [inputPassword, setInputPassword] = useState('');
 
+    const [showprogress, setshowProgress] = useState(true)
+
     function handleInputChange(event) {
         setInputPassword(event.target.value);
     }
@@ -28,6 +35,7 @@ function Review() {
     function handleSubmit(event) {
         event.preventDefault();
         if (inputPassword === password) {
+            Cookies.set('authenticated', 'true', { expires: 7 })
             setIsAuthenticated(true);
         } else {
             setInputPassword('');
@@ -58,6 +66,8 @@ function Review() {
             person.todelete = true;
         } else if (type === 'approve') {
             person.review = false;
+        } else if (type === 'reject') {
+            person.reject = true;
         }
 
         try {
@@ -114,12 +124,16 @@ function Review() {
                             </>
                         )}
                         {(person.review === true && person.todelete === true) && (
-                            <button onClick={() => handleApprove(person, 'delete')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Delete</button>
+                            <>
+                                <button onClick={() => handleApprove(person, 'delete')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Delete</button>
+                                <button onClick={() => handleApprove(person, 'reject')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button>
+                            </>
                         )}
                         {(person.review === true && person.todelete === false) && (
                             <>
                                 <button onClick={() => handleApprove(person, 'approve')} className="p-1.5 sm:px-4 sm:py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition duration-300">Approve</button>
-                                <button onClick={() => { }} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button>
+                                {/* <button onClick={() => { }} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button> */}
+                                <button onClick={() => handleApprove(person, 'reject')} className="p-1.5 sm:px-4 sm:py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition duration-300">Reject</button>
                             </>
                         )}
                     </div>
@@ -145,9 +159,7 @@ function Review() {
                 setnewPersons(newPersons);
                 setdeletePersons(deletePersons);
 
-                console.log('review', reviewPersons);
-                console.log('new', newPersons);
-                console.log('delete', deletePersons);
+                setshowProgress(false)
 
             } catch (error) {
                 console.error(error);
@@ -155,6 +167,19 @@ function Review() {
         };
 
         fetchReviewPersons();
+    }, []);
+
+    useEffect(() => {
+        const authenticated = Cookies.get('authenticated');
+        if (authenticated === 'true') {
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    // dark and light mode
+    useEffect(() => {
+        const savedIsDarkMode = Cookies.get('isDarkMode');
+        setIsDarkMode(savedIsDarkMode === 'true');
     }, []);
 
     const handleShowReview = () => setShow('review');
@@ -166,7 +191,7 @@ function Review() {
             <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
                 <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
                 <div className={`flex justify-center items-center h-screen `}>
-                    <form className={`w-2/3 sm:w-1/2 max-w-md p-4 rounded-lg shadow-lg ${cardBg}`}onSubmit={handleSubmit}>
+                    <form className={`w-2/3 sm:w-1/2 max-w-md p-4 rounded-lg shadow-lg ${cardBg}`} onSubmit={handleSubmit}>
                         <div className="mb-4">
                             <label className="block font-bold mb-2" htmlFor="password">
                                 Enter Admin Password:
@@ -198,7 +223,13 @@ function Review() {
         <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
             <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
 
-            <div className='w-full min-h-screen pt-[5rem] px-4'>
+            {showprogress ? (
+                <div className='w-full min-h-screen pt-[5rem] px-4'>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+                        <CircularProgress />
+                    </Box>
+                </div>
+            ) : (<div className='w-full min-h-screen pt-[5rem] px-4'>
                 {/* BUTTONS ---------------------------------- */}
                 <div className="flex justify-center space-x-4 mt-4">
                     <button
@@ -241,7 +272,7 @@ function Review() {
                             card(person, index)
                         ))}
                 </div>
-            </div>
+            </div>)}
 
         </div>
     );
