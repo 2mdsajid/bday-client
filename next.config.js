@@ -10,10 +10,11 @@ module.exports = {
     return [
       {
         source: '/:path*',
-        destination: 'https://birthday.adaptable.app/:path*', // Replace with your backend server address
+        destination: 'http://localhost:4001/:path*', // Replace with your backend server address
       },
     ];
   },
 
   // Other Next.js config options...
+  // https://birthday.adaptable.app
 }

@@ -103,6 +103,10 @@ const About = () => {
     const appBgClass = isDarkMode ? 'bg-dark' : 'bg-light';
     const appTextClass = isDarkMode ? 'text-white' : 'text-black';
 
+    // for cards
+    const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
+    const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
+
 
     return (
         <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
@@ -155,13 +159,19 @@ const About = () => {
                     </Accordion>
                 </div>
 
+                {/* DATA SOURCE */}
+                <h2 className="text-2xl font-bold mb-2">Data Source</h2>
+                <p className="text-lg italic mt-3 mb-10">
+                    All birthday data is collected from public profiles such as Facebook and Instagram. No privacy was harmed during the data collection. However, please note that the dates may be wrong. If you want to opt-out of our service, please contact us or respond through the site by clicking &rdquo;Delete My Profile&rdquo;.
+                </p>
+
 
                 <h2 className="text-2xl font-bold mb-2 mt-5">Future Updates</h2>
                 <p className="text-lg mb-4">
                     We are constantly working on improving our application and adding new
                     features. Some of the upcoming updates include:
                 </p>
-                <ul className="list-disc list-inside mb-4">
+                <ul className="list-disc list-inside mb-10">
                     <li>Ability to set reminders for upcoming birthdays</li>
                     <li>Option to import birthdays from your contacts</li>
                     <li>Integration with social media to send birthday wishes</li>
@@ -234,11 +244,35 @@ const About = () => {
                         Submit
                     </button>
                 </form>
-                <div className="text-lg italic mt-10 mb-10">
-                    <p>
-                        <strong>Data Source:</strong> All birthday data is collected from public profiles such as Facebook and Instagram. No privacy was harmed during the data collection. However, please note that the dates may be wrong. If you want to opt-out of our service, please contact us or respond through the site by clicking &rdquo;Delete My Profile&rdquo;.
-                    </p>
-                </div>
+
+
+                {/* CREATORS SECTION */}
+                <section class="py-12 {{appBgClass}} {{appTextClass}}">
+                    <div class="   ">
+                        <div class="lg:text-center">
+                            <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Creators</h2>
+                            <h2 className="text-2xl font-bold mb-2 mt-5">People Behind The Scene</h2>
+                        </div>
+
+                        <div className={`${cardBg} mt-5 rounded-lg shadow-lg p-6 md:p-8`}>
+                            <h3 className={`text-lg font-medium ${textColor}`}>Raj Basel</h3>
+                            <p className="mt-2 text-gray-600 dark:text-gray-400">Domain Provider</p>
+                            <p className="mt-3 text-gray-600 dark:text-gray-400">"Your domain donation can create an online world of possibilities."</p>
+                        </div>
+                        <div className={`${cardBg} mt-5 rounded-lg shadow-lg p-6 md:p-8`}>
+                            <h3 className={`text-lg font-medium ${textColor}`}>Nishant Pandey</h3>
+                            <p className="mt-2 text-gray-600 dark:text-gray-400">UX/UI Designer</p>
+                            <p className="mt-3 text-gray-600 dark:text-gray-400">"Design is not just what it looks like and feels like. Design is how it works."</p>
+                        </div>
+                        <div className={`${cardBg} mt-5 rounded-lg shadow-lg p-6 md:p-8`}>
+                            <h3 className={`text-lg font-medium ${textColor}`}>Mr. C</h3>
+                            <p className="mt-2 text-gray-600 dark:text-gray-400">Hardcore Coder</p>
+                            <p className="mt-3 text-gray-600 dark:text-gray-400">"Coding is five sleepless nights and you get this site"</p>
+                        </div>
+
+                    </div>
+                </section>
+                {/* creators */}
             </div>
         </div>
     );

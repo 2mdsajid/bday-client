@@ -68,11 +68,18 @@ function Review() {
             person.id = person._id
         } else if (type === 'delete') {
             person.todelete = true;
+            person.published = false;
+            person.review = false;
         } else if (type === 'approve') {
             person.review = false;
         } else if (type === 'reject') {
+            console.log('reject')
+            // person.review = false;
             person.reject = true;
         }
+        
+
+        console.log(person)
 
         try {
             // Send a POST request to the backend API
@@ -155,14 +162,16 @@ function Review() {
 
                 const persons = data.data;
                 const reviewPersons = persons.filter(person => person.review === true && person.todelete === false && person.published === true);
-                const newPersons = persons.filter(person => person.published === false && person.review === true);
-                const deletePersons = persons.filter(person => person.review === true && person.todelete === true);
+                const newPersons = persons.filter(person => person.published === false && person.review === true && person.todelete === false);
+                const deletePersons = persons.filter(person => person.review === true && person.todelete === true && person.published === true);
 
                 setReviewPersons(reviewPersons);
                 setnewPersons(newPersons);
                 setdeletePersons(deletePersons);
 
                 console.log(reviewPersons)
+                console.log(newPersons)
+                console.log(deletePersons)
 
                 setshowProgress(false)
 

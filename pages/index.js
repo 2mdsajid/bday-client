@@ -29,9 +29,22 @@ import { storelocalStorage, loadlocalStorage } from '../components/functions'
 import Cookies from 'js-cookie';
 
 const inter = Inter({ subsets: ['latin'] })
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
+
+// SCROLL REVEAL IMPORT
+// import ScrollReveal from 'react-scroll-reveal';
+// import ScrollReveal from 'scrollreveal'
+// import "animate.css/animate.min.css";
+// import { AnimationOnScroll } from 'react-animation-on-scroll';
+
+  // SCROLL REVEAL
+  import AOS from 'aos';
+  import 'aos/dist/aos.css';
+  
 
 export default function Home() {
+
+
 
   const [isDarkMode, setIsDarkMode] = useState(true); // State for tracking dark mode
 
@@ -46,7 +59,11 @@ export default function Home() {
 
   // to show a dialogue at the beginning
   const [showDialog, setShowDialog] = useState(true);
-  const [dialogcount,setdialogCount] = useState(0)
+  const [dialogcount, setdialogCount] = useState(0)
+
+  // ANIMATION TYPE
+  const [animationtype,setanimationType] = useState('')
+
 
 
 
@@ -72,6 +89,7 @@ export default function Home() {
     const [showprogress, setshowProgress] = useState(false)
 
     const [pic, setPic] = useState(null);
+    const [originalPic, setOriginalPic] = useState(picUrl);
 
 
 
@@ -79,7 +97,7 @@ export default function Home() {
       id: id,
       name: name,
       bday: bday,
-      pic: "",
+      pic: picUrl,
       bio: bio
     });
 
@@ -113,9 +131,8 @@ export default function Home() {
       data.append('del', todelete.toString());
 
       // append the pic to the object
-      if (pic !== null) {
-        data.append('pic', pic);
-      }
+      data.append('pic', pic !== null ? pic : formData.pic);
+
 
       // console.log('bio', formData)
       try {
@@ -217,21 +234,66 @@ export default function Home() {
                     onChange={(e) => setFormData({ ...formData, bday: e.target.value })}
                   />
                 </div>
+
+                {/* update image uploading */}
+
                 <div className="mb-4">
                   <label className={`${textColor} block mb-2`} htmlFor="image">
                     Image
                   </label>
-                  <input
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="image"
-                    type="file"
-                    onChange={(event) => {
-                      if (event.target.files !== null) {
-                        setPic(event.target.files[0]);
-                      }
-                    }}
-                  />
+                  <div className="flex items-center">
+                    <div className="w-full">
+                      <label className="flex flex-col items-center p-2 bg-white rounded-md shadow-md tracking-wide uppercase border border-black cursor-pointer hover:bg-blue hover:text-black text-black ease-linear transition-all duration-150">
+                        {/* <svg
+                          className="w-8 h-8 text-blue-400"
+                          fill="currentColor"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 12a2 2 0 100-4 2 2 0 000 4z"
+                            clipRule="evenodd"
+                          />
+                          <path
+                            fillRule="evenodd"
+                            d="M3 10a7 7 0 1114 0 7 7 0 01-14 0zm7-9a1 1 0 00-1 1v1.586a1 1 0 11-2 0V2a3 3 0 116 0v1.586a1 1 0 11-2 0V2a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg> */}
+                        <span className=" text-base leading-normal">{originalPic.name ? originalPic.name : `select an image`}</span>
+                        <input
+                          className="hidden"
+                          type="file"
+                          accept="image/*"
+                          onChange={(event) => {
+                            if (event.target.files !== null) {
+                              setPic(event.target.files[0]);
+                              setOriginalPic(event.target.files[0]);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+                    {originalPic.name && (
+                      <div className="ml-4">
+                        <button
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setOriginalPic(formData.pic);
+                            setPic(null);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
+
+
+
+                {/* updatesd image uploader */}
                 <div className="mb-4">
                   <label className={`${textColor} block mb-2`} htmlFor="bio">
                     Bio
@@ -341,20 +403,22 @@ export default function Home() {
 
     const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
     const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
-
+    // 
     return (
       <>
-        <div key={id} onClick={openPopup} className={`${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] sm:w-[15rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
-          <img src={picUrl ? picUrl : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
-          <div className="p-2 sm:p-4 text-center sm:text-left">
-            <div className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}>
-              <span>{name}</span>
-              <span className="text-gray-600 dark:text-gray-400 text-xl capitalize">{bday}</span>
+        {/* <AnimationOnScroll animateIn="animate__bounceIn" offset={150} initiallyVisible={true}  animatePreScroll={false}> */}
+          <div data-aos={animationtype} key={id} onClick={openPopup} className={`bdaycards ${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] sm:w-[15rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
+            <img src={picUrl ? picUrl : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
+            <div className="p-2 sm:p-4 text-center sm:text-left">
+              <div className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}>
+                <span>{name}</span>
+                <span className="text-gray-600 dark:text-gray-400 text-xl capitalize">{bday}</span>
+              </div>
+              <Timer expiryTimestamp={dob} min={min} sec={sec} />
             </div>
-            <Timer expiryTimestamp={dob} min={min} sec={sec} />
           </div>
-        </div>
-        {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} popupOpen={popupOpen} openPopup={openPopup} closePopup={closePopup} min={min} sec={sec} />}
+          {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} popupOpen={popupOpen} openPopup={openPopup} closePopup={closePopup} min={min} sec={sec} />}
+        {/* </AnimationOnScroll> */}
       </>
     );
   }
@@ -396,8 +460,10 @@ export default function Home() {
     // console.log(searchValue)
 
     setSearch(searchValue)
-
+    setanimationType('slide-up')
+    
     if (searchValue === '') {
+              setanimationType('slide-up')
       return setPeople(initialPeople)
     } else {
 
@@ -509,14 +575,8 @@ export default function Home() {
     setIsDarkMode(savedIsDarkMode === 'true');
   }, []);
 
-  // to show dialogue box at beginning
-  // useEffect(() => {
-  //   // Check if the dialog has been shown before
-
-  // }, []);
-
   useEffect(() => {
-    setdialogCount(Number(dialogcount)+1)
+    setdialogCount(Number(dialogcount) + 1)
     // localStorage.setItem('dialogcount', dialogcount);
 
     // Add or remove the modal-open class on the body element depending on whether the dialog is open
@@ -530,13 +590,13 @@ export default function Home() {
     if (hasShownDialog) {
 
       const dgc = Number(localStorage.getItem('dialogcount'));
-      if(dgc){
-        if(dgc>2){
+      if (dgc) {
+        if (dgc > 2) {
           setShowDialog(false);
         }
-        localStorage.setItem('dialogcount', Number(dgc)+1);
+        localStorage.setItem('dialogcount', Number(dgc) + 1);
       } else {
-        localStorage.setItem('dialogcount', Number(dialogcount)+1);
+        localStorage.setItem('dialogcount', Number(dialogcount) + 1);
       }
       // If the dialog has been shown before, don't show it again
 
@@ -547,6 +607,17 @@ export default function Home() {
     }
 
   }, [showDialog]);
+
+  // ANIMATE USEEFFECT usnig AOS
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once:false
+    });
+
+    setanimationType('zoom-in')
+
+  }, []);
 
 
   return (
@@ -603,13 +674,16 @@ export default function Home() {
             <CircularProgress />
           </Box>
         ) : (<><div className='flex flex-col sm:flex-row flex-wrap items-center sm:items-start justify-center space-x-2 py-5'>
-          {(todaybirthdays && search.length === 0) && <>
-            {todaybirthdays.map((person, index) => {
-              return <TodayBirthday key={index} person={person} index={index} />
-            })}
-          </>
+          {(todaybirthdays && search.length === 0) &&
+          <>
+              {todaybirthdays.map((person, index) => {
+                return <TodayBirthday key={index} person={person} index={index} />
+              })}
+       
+            </>
           }
         </div>
+
           <div className='flex items-center justify-center pt-4'>
             {people && <BirthdayCards />}
           </div></>)}

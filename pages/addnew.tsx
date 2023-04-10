@@ -95,6 +95,7 @@ function AddNew() {
             });
 
             const res = await response.json()
+            console.log(res)
             setAlertMessage(res.message);
 
 
