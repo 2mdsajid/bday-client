@@ -257,17 +257,17 @@ const About = () => {
                         <div className={`${cardBg} mt-5 rounded-lg shadow-lg p-6 md:p-8`}>
                             <h3 className={`text-lg font-medium ${textColor}`}>Raj Basel</h3>
                             <p className="mt-2 text-gray-600 dark:text-gray-400">Domain Provider</p>
-                            <p className="mt-3 text-gray-600 dark:text-gray-400">"Your domain donation can create an online world of possibilities."</p>
+                            <p className="mt-3 text-gray-600 dark:text-gray-400">&quot;Your domain donation can create an online world of possibilities.&quot;</p>
                         </div>
                         <div className={`${cardBg} mt-5 rounded-lg shadow-lg p-6 md:p-8`}>
                             <h3 className={`text-lg font-medium ${textColor}`}>Nishant Pandey</h3>
                             <p className="mt-2 text-gray-600 dark:text-gray-400">UX/UI Designer</p>
-                            <p className="mt-3 text-gray-600 dark:text-gray-400">"Design is not just what it looks like and feels like. Design is how it works."</p>
+                            <p className="mt-3 text-gray-600 dark:text-gray-400">&quot;Design is not just what it looks like and feels like. Design is how it works.&quot;</p>
                         </div>
                         <div className={`${cardBg} mt-5 rounded-lg shadow-lg p-6 md:p-8`}>
                             <h3 className={`text-lg font-medium ${textColor}`}>Mr. C</h3>
                             <p className="mt-2 text-gray-600 dark:text-gray-400">Hardcore Coder</p>
-                            <p className="mt-3 text-gray-600 dark:text-gray-400">"Coding is five sleepless nights and you get this site"</p>
+                            <p className="mt-3 text-gray-600 dark:text-gray-400">&quot;Coding is five sleepless nights and you get this site&quot;</p>
                         </div>
 
                     </div>

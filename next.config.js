@@ -10,7 +10,7 @@ module.exports = {
     return [
       {
         source: '/:path*',
-        destination: 'http://localhost:4001/:path*', // Replace with your backend server address
+        destination: 'https://birthday.adaptable.app/:path*', // Replace with your backend server address
       },
     ];
   },
