@@ -520,7 +520,7 @@ export default function Home() {
       const month = monthMap[monthStr.toLowerCase()] + 1;
       const day = parseInt(dayStr);
       
-      console.log('after date')
+      // console.log('after date')
       let birthYear = todayYear;
       
       if (month < todayMonth || (month === todayMonth && day < todayDate)) {
@@ -531,13 +531,13 @@ export default function Home() {
         person.isbirthday = false;
       }
       
-      console.log('after date22')
+      // console.log('after date22')
 
       const dob = new Date(birthYear, monthMap[monthStr.toLowerCase()], dayStr).toISOString();
 
       console.log('after date33')
       person.dob = dob;
-      console.log('after date44')
+      // console.log('after date44')
     });
     
     console.log('after date55')
@@ -571,68 +571,68 @@ export default function Home() {
   const [runuse, setrunUse] = useState(true)
 
   // first use effect and fetch data
-  // useEffect(() => {
-  //   console.log('render useeffect')
-  //   let isMounted = true;
-  //   const fetchData = async () => {
-  //     setrunUse(false)
-
-  //     try {
-  //       console.log('fetching..................')
-  //       const response = await fetch('/getallperson');
-  //       const result = await response.json();
-  //       const res = await checkCat(result.data)
-  //       const newpeople = await filterBdays(res)
-  //       console.log('getting response')
-
-  //       if (isMounted) {
-  //         console.log(isMounted)
-  //         setPeople(newpeople);
-  //         setinitialPeople(newpeople);
-  //       }
-
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error.message);
-  //     }
-  //   }
-  //     fetchData();
-
-
-  //   return () => {
-  //     isMounted = false;
-  //   };
-
-  // }, []);
-
-
-
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch('/getallperson');
-      const result = await response.json();
-      console.log('the response',result)
-      
-      // console.log('fetching111..................')
-      const res = await checkCat(result.data)
-      
-      console.log('fetching222..................')
-      const newpeople = await filterBdays(res)
-      console.log('fetching333..................')
-
-      setPeople(newpeople);
-      setinitialPeople(newpeople);
-      console.log(people)
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
   useEffect(() => {
     console.log('render useeffect')
-    fetchData()
-  }, [])
+    let isMounted = true;
+    const fetchData = async () => {
+      setrunUse(false)
+
+      try {
+        console.log('fetching..................')
+        const response = await fetch('/getallperson');
+        const result = await response.json();
+        const res = await checkCat(result.data)
+        const newpeople = await filterBdays(res)
+        console.log('getting response')
+
+        if (isMounted) {
+          console.log(isMounted)
+          setPeople(newpeople);
+          setinitialPeople(newpeople);
+        }
+
+      } catch (error) {
+        console.error('Error fetching data:', error.message);
+      }
+    }
+      fetchData();
+
+
+    return () => {
+      isMounted = false;
+    };
+
+  }, []);
+
+
+
+
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await fetch('/getallperson');
+  //     const result = await response.json();
+  //     console.log('the response',result)
+      
+  //     // console.log('fetching111..................')
+  //     const res = await checkCat(result.data)
+      
+  //     console.log('fetching222..................')
+  //     const newpeople = await filterBdays(res)
+  //     console.log('fetching333..................')
+
+  //     setPeople(newpeople);
+  //     setinitialPeople(newpeople);
+  //     console.log(people)
+
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   console.log('render useeffect')
+  //   fetchData()
+  // }, [])
 
 
   // to store the dark-light mode in cookies
