@@ -535,18 +535,18 @@ export default function Home() {
 
       const dob = new Date(birthYear, monthMap[monthStr.toLowerCase()], dayStr).toISOString();
 
-      console.log('after date33')
+      // console.log('after date33')
       person.dob = dob;
       // console.log('after date44')
     });
     
-    console.log('after date55')
+    // console.log('after date55')
     // Sort the data array by dob in ascending order
     data.sort((a, b) => {
       return a.dob.localeCompare(b.dob);
     });
     
-    console.log('after date66')
+    // console.log('after date66')
     // data.map((dta) => {
     //   console.log(dta.dob)
     // })
