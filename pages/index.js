@@ -37,10 +37,10 @@ import { useState, useEffect, useContext, useRef } from 'react';
 // import "animate.css/animate.min.css";
 // import { AnimationOnScroll } from 'react-animation-on-scroll';
 
-  // SCROLL REVEAL
-  import AOS from 'aos';
-  import 'aos/dist/aos.css';
-  
+// SCROLL REVEAL
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 
 export default function Home() {
 
@@ -62,7 +62,7 @@ export default function Home() {
   const [dialogcount, setdialogCount] = useState(0)
 
   // ANIMATION TYPE
-  const [animationtype,setanimationType] = useState('')
+  const [animationtype, setanimationType] = useState('')
 
 
 
@@ -407,17 +407,17 @@ export default function Home() {
     return (
       <>
         {/* <AnimationOnScroll animateIn="animate__bounceIn" offset={150} initiallyVisible={true}  animatePreScroll={false}> */}
-          <div data-aos={animationtype} key={id} onClick={openPopup} className={`bdaycards ${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] sm:w-[15rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
-            <img src={picUrl ? picUrl : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
-            <div className="p-2 sm:p-4 text-center sm:text-left">
-              <div className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}>
-                <span>{name}</span>
-                <span className="text-gray-600 dark:text-gray-400 text-xl capitalize">{bday}</span>
-              </div>
-              <Timer expiryTimestamp={dob} min={min} sec={sec} />
+        <div data-aos={animationtype} key={id} onClick={openPopup} className={`bdaycards ${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] sm:w-[15rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
+          <img src={picUrl ? picUrl : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
+          <div className="p-2 sm:p-4 text-center sm:text-left">
+            <div className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}>
+              <span>{name}</span>
+              <span className="text-gray-600 dark:text-gray-400 text-xl capitalize">{bday}</span>
             </div>
+            <Timer expiryTimestamp={dob} min={min} sec={sec} />
           </div>
-          {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} popupOpen={popupOpen} openPopup={openPopup} closePopup={closePopup} min={min} sec={sec} />}
+        </div>
+        {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} popupOpen={popupOpen} openPopup={openPopup} closePopup={closePopup} min={min} sec={sec} />}
         {/* </AnimationOnScroll> */}
       </>
     );
@@ -461,9 +461,9 @@ export default function Home() {
 
     setSearch(searchValue)
     setanimationType('slide-up')
-    
+
     if (searchValue === '') {
-              setanimationType('slide-up')
+      setanimationType('slide-up')
       return setPeople(initialPeople)
     } else {
 
@@ -535,9 +535,7 @@ export default function Home() {
 
     // Sort the data array by dob in ascending order
     data.sort((a, b) => {
-      const dateA = new Date(`${a.dob}`).getTime();
-      const dateB = new Date(`${b.dob}`).getTime();
-      return dateA - dateB;
+      return a.dob.localeCompare(b.dob);
     });
 
     return data;
@@ -612,7 +610,7 @@ export default function Home() {
   useEffect(() => {
     AOS.init({
       duration: 1000,
-      once:false
+      once: false
     });
 
     setanimationType('zoom-in')
@@ -675,11 +673,11 @@ export default function Home() {
           </Box>
         ) : (<><div className='flex flex-col sm:flex-row flex-wrap items-center sm:items-start justify-center space-x-2 py-5'>
           {(todaybirthdays && search.length === 0) &&
-          <>
+            <>
               {todaybirthdays.map((person, index) => {
                 return <TodayBirthday key={index} person={person} index={index} />
               })}
-       
+
             </>
           }
         </div>
