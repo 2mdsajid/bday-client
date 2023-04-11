@@ -508,16 +508,19 @@ export default function Home() {
       'dec': 11,
     };
 
+    console.log('pre date')
     const today = new Date();
     const todayYear = today.getFullYear();
     const todayMonth = today.getMonth() + 1;
     const todayDate = today.getDate();
-
+    
+    console.log('post date')
     data.forEach((person) => {
       const [monthStr, dayStr] = person.bday.split(' ');
       const month = monthMap[monthStr.toLowerCase()] + 1;
       const day = parseInt(dayStr);
-
+      
+      console.log('after date')
       let birthYear = todayYear;
 
       if (month < todayMonth || (month === todayMonth && day < todayDate)) {
@@ -599,16 +602,19 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      console.log('fetching..................')
       const response = await fetch('/getallperson');
       const result = await response.json();
-
+      
+      console.log('fetching111..................')
       const res = await checkCat(result.data)
-
+      
+      console.log('fetching222..................')
       const newpeople = await filterBdays(res)
+      console.log('fetching333..................')
 
       setPeople(newpeople);
       setinitialPeople(newpeople);
+      console.log(people)
 
     } catch (error) {
       console.error('Error fetching data:', error);
