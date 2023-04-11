@@ -532,7 +532,9 @@ export default function Home() {
       }
       
       console.log('after date22')
-      const dob = new Date(`${birthYear}-${monthStr}-${dayStr}`).toISOString();
+
+      const dob = new Date(birthYear, monthMap[monthStr.toLowerCase()], dayStr).toISOString();
+
       console.log('after date33')
       person.dob = dob;
       console.log('after date44')
