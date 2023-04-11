@@ -9,7 +9,7 @@ interface TimerProps {
 }
 
 function Timer({ expiryTimestamp, min, sec }: TimerProps) {
-  const expiryDate = moment(expiryTimestamp, 'YYYY MMM DD').toDate();
+  const expiryDate = moment(expiryTimestamp).toDate();
   const {
     seconds,
     minutes,

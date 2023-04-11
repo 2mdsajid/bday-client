@@ -491,7 +491,6 @@ export default function Home() {
   const appTextClass = isDarkMode ? 'text-white' : 'text-black';
 
   const checkCat = (data) => {
-
     const monthMap = {
       'jan': 0,
       'feb': 1,
@@ -506,41 +505,44 @@ export default function Home() {
       'nov': 10,
       'dec': 11,
     };
-
+  
     const today = new Date();
     const todayYear = today.getFullYear();
     const todayMonth = today.getMonth() + 1;
     const todayDate = today.getDate();
-
+  
     data.forEach((person) => {
       const [monthStr, dayStr] = person.bday.split(' ');
       const month = monthMap[monthStr.toLowerCase()] + 1;
       const day = parseInt(dayStr);
-
+  
       let birthYear = todayYear;
-
+  
       if (month < todayMonth || (month === todayMonth && day < todayDate)) {
         birthYear++;
       } else if (month === todayMonth && day === todayDate) {
         person.isbirthday = true;
-        // settodaysBirthdays([...todaybirthdays, person])
       } else {
         person.isbirthday = false;
       }
-
-      person.dob = `${birthYear} ${monthStr} ${dayStr}`;
-
+  
+      const dob = new Date(`${birthYear}-${monthStr}-${dayStr}`).toISOString();
+      person.dob = dob;
     });
-
-
+  
     // Sort the data array by dob in ascending order
     data.sort((a, b) => {
       return a.dob.localeCompare(b.dob);
     });
+  
+    data.map((dta)=>{
+      console.log(dta.dob)
+    })
 
     return data;
   };
-
+  
+  
 
   const fetchData = async () => {
     try {
