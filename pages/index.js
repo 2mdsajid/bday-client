@@ -508,13 +508,13 @@ export default function Home() {
       'dec': 11,
     };
 
-    console.log('pre date')
+    // console.log('pre date')
     const today = new Date();
     const todayYear = today.getFullYear();
     const todayMonth = today.getMonth() + 1;
     const todayDate = today.getDate();
     
-    console.log('post date')
+    // console.log('post date')
     data.forEach((person) => {
       const [monthStr, dayStr] = person.bday.split(' ');
       const month = monthMap[monthStr.toLowerCase()] + 1;
@@ -522,7 +522,7 @@ export default function Home() {
       
       console.log('after date')
       let birthYear = todayYear;
-
+      
       if (month < todayMonth || (month === todayMonth && day < todayDate)) {
         birthYear++;
       } else if (month === todayMonth && day === todayDate) {
@@ -530,16 +530,21 @@ export default function Home() {
       } else {
         person.isbirthday = false;
       }
-
+      
+      console.log('after date22')
       const dob = new Date(`${birthYear}-${monthStr}-${dayStr}`).toISOString();
+      console.log('after date33')
       person.dob = dob;
+      console.log('after date44')
     });
-
+    
+    console.log('after date55')
     // Sort the data array by dob in ascending order
     data.sort((a, b) => {
       return a.dob.localeCompare(b.dob);
     });
-
+    
+    console.log('after date66')
     // data.map((dta) => {
     //   console.log(dta.dob)
     // })
@@ -604,8 +609,9 @@ export default function Home() {
     try {
       const response = await fetch('/getallperson');
       const result = await response.json();
+      console.log('the response',result)
       
-      console.log('fetching111..................')
+      // console.log('fetching111..................')
       const res = await checkCat(result.data)
       
       console.log('fetching222..................')
