@@ -141,7 +141,8 @@ function AddNew() {
     return (
         <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
             <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
-            <div className={`flex items-center justify-center w-4/5 sm:w-1/2 mx-auto pt-20 ${appBgClass}`}>
+            <div className={`flex flex-col items-center justify-center w-4/5 sm:w-1/2 mx-auto pt-20 ${appBgClass}`}>
+            <h1 className={`mt-6 block text-xl font-bold ${appTextClass}`}>Add New Birthday</h1>
                 <form onSubmit={handleSubmit} className="max-w-md mx-auto">
                     <>{showprogress && <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <CircularProgress color="success" />

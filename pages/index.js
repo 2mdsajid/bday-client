@@ -58,11 +58,13 @@ export default function Home() {
   const [search, setSearch] = useState('')
 
   // to show a dialogue at the beginning
-  const [showDialog, setShowDialog] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
   const [dialogcount, setdialogCount] = useState(0)
 
   // ANIMATION TYPE
   const [animationtype, setanimationType] = useState('')
+
+  // prevent useeffect running twice
 
 
 
@@ -387,7 +389,6 @@ export default function Home() {
   function BirthdayCard({ index, cat, id, name, picUrl, dob, bday, bio, min, sec }) {
     const [popupOpen, setPopupOpen] = useState(false);
 
-    // console.log('key',id)
 
     const openPopup = () => {
       document.body.classList.add("no-scroll");
@@ -408,7 +409,7 @@ export default function Home() {
       <>
         {/* <AnimationOnScroll animateIn="animate__bounceIn" offset={150} initiallyVisible={true}  animatePreScroll={false}> */}
         <div data-aos={animationtype} key={id} onClick={openPopup} className={`bdaycards ${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] sm:w-[15rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
-          <img src={picUrl ? picUrl : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
+          <img src={picUrl ? picUrl : `https://randomuser.me/api/portraits/men/${index}.jpg`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
           <div className="p-2 sm:p-4 text-center sm:text-left">
             <div className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}>
               <span>{name}</span>
@@ -442,6 +443,7 @@ export default function Home() {
   // birthday card calling data--------------------------
   function BirthdayCards() {
     // console.log('people in card', people)
+    // console.log('key')
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-0 sm:p-4">
         {people.map((person, index) => (
@@ -505,19 +507,19 @@ export default function Home() {
       'nov': 10,
       'dec': 11,
     };
-  
+
     const today = new Date();
     const todayYear = today.getFullYear();
     const todayMonth = today.getMonth() + 1;
     const todayDate = today.getDate();
-  
+
     data.forEach((person) => {
       const [monthStr, dayStr] = person.bday.split(' ');
       const month = monthMap[monthStr.toLowerCase()] + 1;
       const day = parseInt(dayStr);
-  
+
       let birthYear = todayYear;
-  
+
       if (month < todayMonth || (month === todayMonth && day < todayDate)) {
         birthYear++;
       } else if (month === todayMonth && day === todayDate) {
@@ -525,49 +527,73 @@ export default function Home() {
       } else {
         person.isbirthday = false;
       }
-  
+
       const dob = new Date(`${birthYear}-${monthStr}-${dayStr}`).toISOString();
       person.dob = dob;
     });
-  
+
     // Sort the data array by dob in ascending order
     data.sort((a, b) => {
       return a.dob.localeCompare(b.dob);
     });
-  
-    data.map((dta)=>{
-      console.log(dta.dob)
-    })
+
+    // data.map((dta) => {
+    //   console.log(dta.dob)
+    // })
 
     return data;
   };
-  
-  
 
-  const fetchData = async () => {
+
+  // random image api
+  async function fetchRandomUser() {
     try {
-      console.log('fetching..................')
-      const response = await fetch('/getallperson');
-      const result = await response.json();
-
-      const res = await checkCat(result.data)
-
-      const newpeople = await filterBdays(res)
-
-      setPeople(newpeople);
-      setinitialPeople(newpeople);
-
+      const response = await fetch('https://randomuser.me/api/');
+      const data = await response.json();
+      const imageUrl = data.results[0].picture.large;
+      console.log(imageUrl);
+      return imageUrl;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error(error);
     }
-  };
+  }
 
+  const [runuse, setrunUse] = useState(true)
 
+  // first use effect and fetch data
   useEffect(() => {
     console.log('render useeffect')
-    fetchData()
-    // filterBdays()
-  }, [])
+    let isMounted = true;
+    const fetchData = async () => {
+      setrunUse(false)
+
+      try {
+        console.log('fetching..................')
+        const response = await fetch('/getallperson');
+        const result = await response.json();
+        const res = await checkCat(result.data)
+        const newpeople = await filterBdays(res)
+
+        if (isMounted) {
+          // console.log(isMounted)
+          setPeople(newpeople);
+          setinitialPeople(newpeople);
+        }
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+      fetchData();
+    
+
+    return () => {
+      isMounted = false;
+    };
+
+  }, []);
+
+
 
   // to store the dark-light mode in cookies
   useEffect(() => {
@@ -575,9 +601,14 @@ export default function Home() {
     setIsDarkMode(savedIsDarkMode === 'true');
   }, []);
 
+// first dialoge appear
   useEffect(() => {
-    setdialogCount(Number(dialogcount) + 1)
-    // localStorage.setItem('dialogcount', dialogcount);
+    const hasShownDialog = localStorage.getItem('hasShownDialog');
+    if (!hasShownDialog) {
+      // If the dialog hasn't been shown before, show it and set the hasShownDialog flag
+      localStorage.setItem('hasShownDialog', true);
+      setShowDialog(true)
+    }
 
     // Add or remove the modal-open class on the body element depending on whether the dialog is open
     if (showDialog) {
@@ -586,32 +617,15 @@ export default function Home() {
       document.body.classList.remove('modal-open');
     }
 
-    const hasShownDialog = localStorage.getItem('hasShownDialog');
-    if (hasShownDialog) {
-
-      const dgc = Number(localStorage.getItem('dialogcount'));
-      if (dgc) {
-        if (dgc > 2) {
-          setShowDialog(false);
-        }
-        localStorage.setItem('dialogcount', Number(dgc) + 1);
-      } else {
-        localStorage.setItem('dialogcount', Number(dialogcount) + 1);
-      }
-      // If the dialog has been shown before, don't show it again
-
-    } else {
-      // If the dialog hasn't been shown before, show it and set the hasShownDialog flag
-      localStorage.setItem('hasShownDialog', true);
-      setShowDialog(true)
-    }
 
   }, [showDialog]);
+
 
   // ANIMATE USEEFFECT usnig AOS
   useEffect(() => {
     AOS.init({
       duration: 1000,
+      offset:100,
       once: false
     });
 
@@ -641,7 +655,7 @@ export default function Home() {
         </div>
       )}
       {/* dialogue ends here */}
-      <div className={`flex items-center justify-center w-1/2 mx-auto pt-20 ${appBgClass}`}>
+      <div className={`flex items-center justify-center w-1/2 mx-auto pt-24 ${appBgClass}`}>
         <div className="relative w-full">
           <input
             className={`bg-gray-200 focus:bg-white border-transparent focus:border-gray-300 w-full rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none text-black`}

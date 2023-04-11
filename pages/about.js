@@ -111,10 +111,8 @@ const About = () => {
     return (
         <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
             <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
-            <div className="p-4 pt-20 w-full sm:w-[70%] md:w-[55%] lg:w-1/3 mx-auto">
-                <p className="text-lg mb-4">
-                    This page is all about our application and its purpose.
-                </p>
+            <div className=" p-4 pt-20 w-full sm:w-[70%] md:w-[55%] lg:w-1/3 mx-auto">
+            <h1 className={`text-center my-6 block text-3xl font-bold ${appTextClass}`}>About This Site</h1>
 
                 <div className='mb-10'>
                     <h2 className="text-2xl font-bold mb-2">What to Do</h2>
@@ -155,6 +153,7 @@ const About = () => {
                                     <li>Update your bio</li>
                                 </ol>
                             </ul>
+                            <p className='mt-3 italic text-red-600'><span className='font-bold text-lg'>Note : </span>All the changes will be visible only after they are approved from the admin site!</p>
                         </AccordionDetails>
                     </Accordion>
                 </div>
