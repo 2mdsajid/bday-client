@@ -561,39 +561,64 @@ export default function Home() {
   const [runuse, setrunUse] = useState(true)
 
   // first use effect and fetch data
+  // useEffect(() => {
+  //   console.log('render useeffect')
+  //   let isMounted = true;
+  //   const fetchData = async () => {
+  //     setrunUse(false)
+
+  //     try {
+  //       console.log('fetching..................')
+  //       const response = await fetch('/getallperson');
+  //       const result = await response.json();
+  //       const res = await checkCat(result.data)
+  //       const newpeople = await filterBdays(res)
+  //       console.log('getting response')
+
+  //       if (isMounted) {
+  //         console.log(isMounted)
+  //         setPeople(newpeople);
+  //         setinitialPeople(newpeople);
+  //       }
+
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error.message);
+  //     }
+  //   }
+  //     fetchData();
+
+
+  //   return () => {
+  //     isMounted = false;
+  //   };
+
+  // }, []);
+
+
+
+
+  const fetchData = async () => {
+    try {
+      console.log('fetching..................')
+      const response = await fetch('/getallperson');
+      const result = await response.json();
+
+      const res = await checkCat(result.data)
+
+      const newpeople = await filterBdays(res)
+
+      setPeople(newpeople);
+      setinitialPeople(newpeople);
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   useEffect(() => {
     console.log('render useeffect')
-    let isMounted = true;
-    const fetchData = async () => {
-      setrunUse(false)
-
-      try {
-        console.log('fetching..................')
-        const response = await fetch('/getallperson');
-        const result = await response.json();
-        const res = await checkCat(result.data)
-        const newpeople = await filterBdays(res)
-        console.log('getting response')
-
-        if (isMounted) {
-          console.log(isMounted)
-          setPeople(newpeople);
-          setinitialPeople(newpeople);
-        }
-
-      } catch (error) {
-        console.error('Error fetching data:', error.message);
-      }
-    }
-      fetchData();
-    
-
-    return () => {
-      isMounted = false;
-    };
-
-  }, []);
-
+    fetchData()
+  }, [])
 
 
   // to store the dark-light mode in cookies
@@ -602,7 +627,7 @@ export default function Home() {
     setIsDarkMode(savedIsDarkMode === 'true');
   }, []);
 
-// first dialoge appear
+  // first dialoge appear
   useEffect(() => {
     const hasShownDialog = localStorage.getItem('hasShownDialog');
     if (!hasShownDialog) {
@@ -626,7 +651,7 @@ export default function Home() {
   useEffect(() => {
     AOS.init({
       duration: 1000,
-      offset:100,
+      offset: 100,
       once: false
     });
 
