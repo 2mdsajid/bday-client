@@ -70,6 +70,20 @@ function AddNew() {
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setshowProgress(true)
+        setIsAlertOpen(false);
+        
+        // check bday format
+        const birthdayRegex = /^[A-Za-z]{3} \d{1,2}$/; // regex to match 'mon day' format
+        if (!birthdayRegex.test(formData.bday.trim())) {
+            setAlertSeverity('error');
+            setAlertMessage('Format birthday correctly : Not like "December 25" but "Dec 25"');
+            
+            
+            setIsAlertOpen(true);
+            setshowProgress(false)
+            return;
+        }
+
 
         // Check if name and bday fields are empty
         if (formData.name.trim() === '' || formData.bday.trim() === '') {
@@ -142,7 +156,7 @@ function AddNew() {
         <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
             <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
             <div className={`flex flex-col items-center justify-center w-4/5 sm:w-1/2 mx-auto pt-20 ${appBgClass}`}>
-            <h1 className={`mt-6 block text-xl font-bold ${appTextClass}`}>Add New Birthday</h1>
+                <h1 className={`mt-6 mb-3 block text-xl font-bold ${appTextClass}`}>Add New Birthday</h1>
                 <form onSubmit={handleSubmit} className="max-w-md mx-auto">
                     <>{showprogress && <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <CircularProgress color="success" />
@@ -162,7 +176,7 @@ function AddNew() {
                             Birthday
                         </label>
                         <div className="mt-2">
-                            <input type="text" id="bday" name="bday" value={formData.bday} onChange={handleChange} required placeholder="e.g. Dec 25" className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                            <input type="text" id="bday" name="bday" value={formData.bday} onChange={handleChange} required placeholder="*format like this : Dec 25" className="block w-full py-2 px-3 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                         </div>
                     </div>
                     <div className="mt-6">
