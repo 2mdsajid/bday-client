@@ -256,7 +256,7 @@ export default function Home({ peoples, initialPeoples }) {
       // console.log('bio', formData)
       try {
         // send the post request to the server
-        const response = await fetch('/addreview', {
+        const response = await fetch(BACKEND+'/addreview', {
           method: 'POST',
           body: data
         });

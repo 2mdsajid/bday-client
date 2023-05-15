@@ -9,6 +9,7 @@ import { ChangeEvent, FormEvent } from "react";
 import Cookies from 'js-cookie';
 
 import Box from '@mui/material/Box'
+import { BACKEND } from '@/components/functions';
 
 // define a list of valid alert severities
 const validAlertSeverities: AlertColor[] = ['error', 'warning', 'info', 'success'];
@@ -103,7 +104,7 @@ function AddNew() {
         }
 
         try {
-            const response = await fetch('/addperson', {
+            const response = await fetch(BACKEND+'/addperson', {
                 method: 'POST',
                 body: data
             });

@@ -1,4 +1,5 @@
-export const BACKEND= "http://localhost:4001"
+export const BACKEND= "https://birthday.adaptable.app"
+// export const BACKEND= "http://localhost:4001"
 
 
 const storelocalStorage = async (key, value) => {
