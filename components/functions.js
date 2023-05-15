@@ -1,4 +1,9 @@
+export const BACKEND= "http://localhost:4001"
+
+
 const storelocalStorage = async (key, value) => {
+
+
     try {
       await localForage.setItem(key, value);
       // console.log('local storage data stored successfully!');

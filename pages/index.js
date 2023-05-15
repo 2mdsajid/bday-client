@@ -31,6 +31,8 @@ import Cookies from 'js-cookie';
 const inter = Inter({ subsets: ['latin'] })
 import { useState, useEffect, useContext, useRef } from 'react';
 
+import { BACKEND } from '../components/functions'
+
 // SCROLL REVEAL IMPORT
 // import ScrollReveal from 'react-scroll-reveal';
 // import ScrollReveal from 'scrollreveal'
@@ -41,18 +43,133 @@ import { useState, useEffect, useContext, useRef } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
+let todaybirthdayss = []
 
-export default function Home() {
+// =====================
+const checkCat = (data) => {
+  const monthMap = {
+    'jan': 0,
+    'feb': 1,
+    'mar': 2,
+    'apr': 3,
+    'may': 4,
+    'jun': 5,
+    'jul': 6,
+    'aug': 7,
+    'sep': 8,
+    'oct': 9,
+    'nov': 10,
+    'dec': 11,
+  };
+
+  // console.log('pre date')
+  const today = new Date();
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth() + 1;
+  const todayDate = today.getDate();
+
+  // console.log('post date')
+  data.forEach((person) => {
+    const [monthStr, dayStr] = person.bday.split(' ');
+    const month = monthMap[monthStr.toLowerCase()] + 1;
+    const day = parseInt(dayStr);
+
+    // console.log('after date')
+    let birthYear = todayYear;
+
+    if (month < todayMonth || (month === todayMonth && day < todayDate)) {
+      birthYear++;
+    } else if (month === todayMonth && day === todayDate) {
+      person.isbirthday = true;
+    } else {
+      person.isbirthday = false;
+    }
+
+    // console.log('after date22')
+
+    const dob = new Date(birthYear, monthMap[monthStr.toLowerCase()], dayStr).toISOString();
+
+    // console.log('after date33')
+    person.dob = dob;
+    // console.log('after date44')
+  });
+
+  // console.log('after date55')
+  // Sort the data array by dob in ascending order
+  data.sort((a, b) => {
+    return a.dob.localeCompare(b.dob);
+  });
+
+  // console.log('after date66')
+  // data.map((dta) => {
+  //   console.log(dta.dob)
+  // })
+
+  return data;
+};
+
+
+// =======================================\
+// FILTER BIRTHDAYS
+const filterBdays = (people) => {
+
+  const filteredPeople = people.filter(person => person.isbirthday === true);
+  todaybirthdayss.push(filteredPeople)
+
+  // console.log('people', filteredPeople)
+
+  // Remove the filtered people from the people array
+  const remainingPeople = people.filter(person => person.isbirthday !== true);
+  return remainingPeople
+
+}
+
+
+
+
+export async function getServerSideProps() {
+  try {
+    const response = await fetch(BACKEND+'/getallperson');
+    const result = await response.json();
+    const res = await checkCat(result.data);
+    const newpeople = await filterBdays(res);
+
+    return {
+      props: {
+        peoples: newpeople,
+        initialPeoples: newpeople,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching data:', error.message);
+
+    return {
+      props: {
+        peoples: [],
+        initialPeoples: [],
+      },
+    };
+  }
+}
+
+
+
+
+
+
+
+
+export default function Home({ peoples, initialPeoples }) {
 
 
 
   const [isDarkMode, setIsDarkMode] = useState(true); // State for tracking dark mode
 
   // defining the array of bdays
-  const [people, setPeople] = useState([]);
-  const [initialPeople, setinitialPeople] = useState([])
+  const [people, setPeople] = useState(peoples);
+  const [initialPeople, setinitialPeople] = useState(initialPeoples)
 
-  const [todaybirthdays, settodayBirthdays] = useState([])
+  const [todaybirthdays, settodayBirthdays] = useState(todaybirthdayss)
 
 
   const [search, setSearch] = useState('')
@@ -424,19 +541,6 @@ export default function Home() {
     );
   }
 
-  // FILTER BIRTHDAYS
-  const filterBdays = (people) => {
-
-    const filteredPeople = people.filter(person => person.isbirthday === true);
-    settodayBirthdays(filteredPeople);
-
-    // console.log('people', filteredPeople)
-
-    // Remove the filtered people from the people array
-    const remainingPeople = people.filter(person => person.isbirthday !== true);
-    return remainingPeople
-
-  }
 
 
 
@@ -492,67 +596,6 @@ export default function Home() {
   const appBgClass = isDarkMode ? 'bg-dark' : 'bg-light';
   const appTextClass = isDarkMode ? 'text-white' : 'text-black';
 
-  const checkCat = (data) => {
-    const monthMap = {
-      'jan': 0,
-      'feb': 1,
-      'mar': 2,
-      'apr': 3,
-      'may': 4,
-      'jun': 5,
-      'jul': 6,
-      'aug': 7,
-      'sep': 8,
-      'oct': 9,
-      'nov': 10,
-      'dec': 11,
-    };
-
-    // console.log('pre date')
-    const today = new Date();
-    const todayYear = today.getFullYear();
-    const todayMonth = today.getMonth() + 1;
-    const todayDate = today.getDate();
-    
-    // console.log('post date')
-    data.forEach((person) => {
-      const [monthStr, dayStr] = person.bday.split(' ');
-      const month = monthMap[monthStr.toLowerCase()] + 1;
-      const day = parseInt(dayStr);
-      
-      // console.log('after date')
-      let birthYear = todayYear;
-      
-      if (month < todayMonth || (month === todayMonth && day < todayDate)) {
-        birthYear++;
-      } else if (month === todayMonth && day === todayDate) {
-        person.isbirthday = true;
-      } else {
-        person.isbirthday = false;
-      }
-      
-      // console.log('after date22')
-
-      const dob = new Date(birthYear, monthMap[monthStr.toLowerCase()], dayStr).toISOString();
-
-      // console.log('after date33')
-      person.dob = dob;
-      // console.log('after date44')
-    });
-    
-    // console.log('after date55')
-    // Sort the data array by dob in ascending order
-    data.sort((a, b) => {
-      return a.dob.localeCompare(b.dob);
-    });
-    
-    // console.log('after date66')
-    // data.map((dta) => {
-    //   console.log(dta.dob)
-    // })
-
-    return data;
-  };
 
 
   // random image api
@@ -571,38 +614,38 @@ export default function Home() {
   const [runuse, setrunUse] = useState(true)
 
   // first use effect and fetch data
-  useEffect(() => {
-    console.log('render useeffect')
-    let isMounted = true;
-    const fetchData = async () => {
-      setrunUse(false)
+  // useEffect(() => {
+  //   console.log('render useeffect')
+  //   let isMounted = true;
+  //   const fetchData = async () => {
+  //     setrunUse(false)
 
-      try {
-        console.log('fetching..................')
-        const response = await fetch('/getallperson');
-        const result = await response.json();
-        const res = await checkCat(result.data)
-        const newpeople = await filterBdays(res)
-        console.log('getting response')
+  //     try {
+  //       console.log('fetching..................')
+  //       const response = await fetch('/getallperson');
+  //       const result = await response.json();
+  //       const res = await checkCat(result.data)
+  //       const newpeople = await filterBdays(res)
+  //       console.log('getting response')
 
-        if (isMounted) {
-          console.log(isMounted)
-          setPeople(newpeople);
-          setinitialPeople(newpeople);
-        }
+  //       if (isMounted) {
+  //         console.log(isMounted)
+  //         setPeople(newpeople);
+  //         setinitialPeople(newpeople);
+  //       }
 
-      } catch (error) {
-        console.error('Error fetching data:', error.message);
-      }
-    }
-      fetchData();
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error.message);
+  //     }
+  //   }
+  //   fetchData();
 
 
-    return () => {
-      isMounted = false;
-    };
+  //   return () => {
+  //     isMounted = false;
+  //   };
 
-  }, []);
+  // }, []);
 
 
 
@@ -612,10 +655,10 @@ export default function Home() {
   //     const response = await fetch('/getallperson');
   //     const result = await response.json();
   //     console.log('the response',result)
-      
+
   //     // console.log('fetching111..................')
   //     const res = await checkCat(result.data)
-      
+
   //     console.log('fetching222..................')
   //     const newpeople = await filterBdays(res)
   //     console.log('fetching333..................')

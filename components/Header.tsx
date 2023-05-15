@@ -84,7 +84,7 @@ const Header = ({ isDarkMode, toggleDarkMode }: HeaderProps) => {
                 </div>
                 <div className='flex'>
                     <div>
-                        <button
+                    <button
                             className={`mx-2 rounded-full w-10 h-10 focus:outline-none ${isDarkMode ? 'bg-white' : 'bg-dark'} ${navTextClass}`}
                             onClick={toggleDarkMode}
                         >

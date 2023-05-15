@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import { Alert, AlertColor } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 // import { AlertColor } from '@material-ui/core';
 
 import { ChangeEvent, FormEvent } from "react";
 
 import Cookies from 'js-cookie';
 
-import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box'
 
 // define a list of valid alert severities
