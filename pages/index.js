@@ -62,19 +62,16 @@ const checkCat = (data) => {
     'dec': 11,
   };
 
-  // console.log('pre date')
   const today = new Date();
   const todayYear = today.getFullYear();
   const todayMonth = today.getMonth() + 1;
   const todayDate = today.getDate();
 
-  // console.log('post date')
   data.forEach((person) => {
     const [monthStr, dayStr] = person.bday.split(' ');
     const month = monthMap[monthStr.toLowerCase()] + 1;
     const day = parseInt(dayStr);
 
-    // console.log('after date')
     let birthYear = todayYear;
 
     if (month < todayMonth || (month === todayMonth && day < todayDate)) {
@@ -85,25 +82,14 @@ const checkCat = (data) => {
       person.isbirthday = false;
     }
 
-    // console.log('after date22')
-
     const dob = new Date(birthYear, monthMap[monthStr.toLowerCase()], dayStr).toISOString();
-
-    // console.log('after date33')
     person.dob = dob;
-    // console.log('after date44')
-  });
 
-  // console.log('after date55')
+  });
   // Sort the data array by dob in ascending order
   data.sort((a, b) => {
     return a.dob.localeCompare(b.dob);
   });
-
-  // console.log('after date66')
-  // data.map((dta) => {
-  //   console.log(dta.dob)
-  // })
 
   return data;
 };
@@ -115,7 +101,6 @@ const filterBdays = (people) => {
 
   const filteredPeople = people.filter(person => person.isbirthday === true);
   todaybirthdayss.push(filteredPeople)
-
   // console.log('people', filteredPeople)
 
   // Remove the filtered people from the people array
@@ -129,15 +114,15 @@ const filterBdays = (people) => {
 
 export async function getServerSideProps() {
   try {
-    const response = await fetch(BACKEND+'/getallperson');
+    const response = await fetch(BACKEND + '/getallperson');
     const result = await response.json();
     const res = await checkCat(result.data);
     const newpeople = await filterBdays(res);
-
     return {
       props: {
         peoples: newpeople,
         initialPeoples: newpeople,
+        datafromdb:res,
       },
     };
   } catch (error) {
@@ -147,21 +132,14 @@ export async function getServerSideProps() {
       props: {
         peoples: [],
         initialPeoples: [],
+        datafromdb: [],
       },
     };
   }
 }
 
 
-
-
-
-
-
-
-export default function Home({ peoples, initialPeoples }) {
-
-
+export default function Home({ peoples, initialPeoples, datafromdb }) {
 
   const [isDarkMode, setIsDarkMode] = useState(true); // State for tracking dark mode
 
@@ -169,7 +147,7 @@ export default function Home({ peoples, initialPeoples }) {
   const [people, setPeople] = useState(peoples);
   const [initialPeople, setinitialPeople] = useState(initialPeoples)
 
-  const [todaybirthdays, settodayBirthdays] = useState(todaybirthdayss)
+  const [todaybirthdays, settodayBirthdays] = useState([])
 
 
   const [search, setSearch] = useState('')
@@ -256,7 +234,7 @@ export default function Home({ peoples, initialPeoples }) {
       // console.log('bio', formData)
       try {
         // send the post request to the server
-        const response = await fetch(BACKEND+'/addreview', {
+        const response = await fetch(BACKEND + '/addreview', {
           method: 'POST',
           body: data
         });
@@ -647,35 +625,39 @@ export default function Home({ peoples, initialPeoples }) {
 
   // }, []);
 
+  const getTodayBirthdays = (people) => {
+    const todayBirthdays = []
+    people.forEach((person) => {
+      if (person.isbirthday === true) {
+        todayBirthdays.push(person)
+      }
+    });
+    return todayBirthdays
+  }
+  
 
 
 
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch('/getallperson');
-  //     const result = await response.json();
-  //     console.log('the response',result)
 
-  //     // console.log('fetching111..................')
-  //     const res = await checkCat(result.data)
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/getallperson');
+      const result = await response.json();
+      const res = await checkCat(result.data)
+      const todaypeople = await getTodayBirthdays(res)
 
-  //     console.log('fetching222..................')
-  //     const newpeople = await filterBdays(res)
-  //     console.log('fetching333..................')
+      console.log(todaypeople)
+      settodayBirthdays(todaypeople)
 
-  //     setPeople(newpeople);
-  //     setinitialPeople(newpeople);
-  //     console.log(people)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   console.log('render useeffect')
-  //   fetchData()
-  // }, [])
+  useEffect(() => {
+    console.log('render useeffect')
+    fetchData()
+  }, [])
 
 
   // to store the dark-light mode in cookies
@@ -715,6 +697,12 @@ export default function Home({ peoples, initialPeoples }) {
     setanimationType('zoom-in')
 
   }, []);
+
+  useEffect(() => {
+    // console.log(peoples)
+    //     console.log(initialPeople)
+    console.log(todaybirthdays)
+  }, [])
 
 
   return (
@@ -776,11 +764,9 @@ export default function Home({ peoples, initialPeoples }) {
               {todaybirthdays.map((person, index) => {
                 return <TodayBirthday key={index} person={person} index={index} />
               })}
-
             </>
           }
         </div>
-
           <div className='flex items-center justify-center pt-4'>
             {people && <BirthdayCards />}
           </div></>)}

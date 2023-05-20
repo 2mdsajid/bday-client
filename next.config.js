@@ -1,7 +1,6 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = {
-  reactStrictMode: true,
   devIndicators: {
     autoPrerender: false,
   },
