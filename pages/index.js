@@ -43,7 +43,6 @@ import { BACKEND } from '../components/functions'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-let todaybirthdayss = []
 
 // =====================
 const checkCat = (data) => {
@@ -100,7 +99,7 @@ const checkCat = (data) => {
 const filterBdays = (people) => {
 
   const filteredPeople = people.filter(person => person.isbirthday === true);
-  todaybirthdayss.push(filteredPeople)
+  // todaybirthdayss.push(filteredPeople)
   // console.log('people', filteredPeople)
 
   // Remove the filtered people from the people array
@@ -118,6 +117,7 @@ export async function getServerSideProps() {
     const result = await response.json();
     const res = await checkCat(result.data);
     const newpeople = await filterBdays(res);
+    console.log("🚀 ~ file: index.js:120 ~ getServerSideProps ~ newpeople:", newpeople[0])
     return {
       props: {
         peoples: newpeople,
@@ -202,7 +202,7 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
       setDeleteFlag(true);
     };
 
-    // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, val: string): Promise<void> => {
+    // const handleSu bmit = async (e: React.FormEvent<HTMLFormElement>, val: string): Promise<void> => {
     const handleSubmit = async (e, val) => {
       e.preventDefault();
 
@@ -562,8 +562,6 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
 
   };
 
-
-
   // Function to toggle dark mode
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -591,39 +589,6 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
 
   const [runuse, setrunUse] = useState(true)
 
-  // first use effect and fetch data
-  // useEffect(() => {
-  //   console.log('render useeffect')
-  //   let isMounted = true;
-  //   const fetchData = async () => {
-  //     setrunUse(false)
-
-  //     try {
-  //       console.log('fetching..................')
-  //       const response = await fetch('/getallperson');
-  //       const result = await response.json();
-  //       const res = await checkCat(result.data)
-  //       const newpeople = await filterBdays(res)
-  //       console.log('getting response')
-
-  //       if (isMounted) {
-  //         console.log(isMounted)
-  //         setPeople(newpeople);
-  //         setinitialPeople(newpeople);
-  //       }
-
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error.message);
-  //     }
-  //   }
-  //   fetchData();
-
-
-  //   return () => {
-  //     isMounted = false;
-  //   };
-
-  // }, []);
 
   const getTodayBirthdays = (people) => {
     const todayBirthdays = []
@@ -634,10 +599,6 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
     });
     return todayBirthdays
   }
-  
-
-
-
 
   const fetchData = async () => {
     try {
@@ -699,7 +660,7 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
   }, []);
 
   useEffect(() => {
-    // console.log(peoples)
+    console.log(people[0])
     //     console.log(initialPeople)
     console.log(todaybirthdays)
   }, [])
@@ -729,7 +690,7 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
       <div className={`flex items-center justify-center w-1/2 mx-auto pt-24 ${appBgClass}`}>
         <div className="relative w-full">
           <input
-            className={`bg-gray-200 focus:bg-white border-transparent focus:border-gray-300 w-full rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none text-black`}
+            className={`bg-gray-200 focus:bg-white border-transparent focus:border-gray-300 w-full rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none`}
             type="text"
             placeholder="Search Your Name..."
             onChange={searchBdays}
