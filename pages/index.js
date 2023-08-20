@@ -117,7 +117,6 @@ export async function getServerSideProps() {
     const result = await response.json();
     const res = await checkCat(result.data);
     const newpeople = await filterBdays(res);
-    console.log("🚀 ~ file: index.js:120 ~ getServerSideProps ~ newpeople:", newpeople[0])
     return {
       props: {
         peoples: newpeople,
