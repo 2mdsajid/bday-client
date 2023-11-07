@@ -1,19 +1,12 @@
-const { createProxyMiddleware } = require('http-proxy-middleware');
-
-module.exports = {
-  devIndicators: {
-    autoPrerender: false,
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: false,
+  experimental: {
+    esmExternals: false, // THIS IS THE FLAG THAT MATTERS
   },
-
-  async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        destination: 'https://birthday.adaptable.app/:path*', // Replace with your backend server address
-      },
-    ];
-  },
-
-  // Other Next.js config options...
-  // https://birthday.adaptable.app
+  images: {
+    domains: ['images.unsplash.com','uploadthing.com'],
+},
 }
+
+module.exports = nextConfig

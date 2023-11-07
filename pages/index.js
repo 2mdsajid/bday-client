@@ -1,37 +1,31 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
-import Header from '@/components/Header'
-import Link from 'next/link'
+import Header from "@/components/Header";
+import { Inter } from "next/font/google";
+import Link from "next/link";
 
-import { FormEventHandler } from 'react';
 
 // import ThemeProvider from '../components/themeprovider'
 
-import { faTimes, faEdit } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTimes } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box'
+import Box from "@mui/material/Box"
+import CircularProgress from "@mui/material/CircularProgress";
 
-import { Alert, AlertColor } from '@mui/material';
+import { Alert } from "@mui/material"
 
-import Timer from '@/components/Timer'
+import Timer from "@/components/Timer";
 
 // clear the input field
-import { XIcon } from '@heroicons/react/outline';
 
 // LOCAL STORAGE FOR UNIQUE USER ID
-import { storelocalStorage, loadlocalStorage } from '../components/functions'
 
 // COOKIES TO STORE THE THEME MODE
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie"
+import { useEffect, useState } from 'react'
 
-const inter = Inter({ subsets: ['latin'] })
-import { useState, useEffect, useContext, useRef } from 'react';
+const inter = Inter({ subsets: ["latin"] });
 
-import { BACKEND } from '../components/functions'
+import { BACKEND } from "../components/functions";
 
 // SCROLL REVEAL IMPORT
 // import ScrollReveal from 'react-scroll-reveal';
@@ -40,25 +34,24 @@ import { BACKEND } from '../components/functions'
 // import { AnimationOnScroll } from 'react-animation-on-scroll';
 
 // SCROLL REVEAL
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-
+import AOS from "aos"
+import "aos/dist/aos.css"
 
 // =====================
 const checkCat = (data) => {
   const monthMap = {
-    'jan': 0,
-    'feb': 1,
-    'mar': 2,
-    'apr': 3,
-    'may': 4,
-    'jun': 5,
-    'jul': 6,
-    'aug': 7,
-    'sep': 8,
-    'oct': 9,
-    'nov': 10,
-    'dec': 11,
+    jan: 0,
+    feb: 1,
+    mar: 2,
+    apr: 3,
+    may: 4,
+    jun: 5,
+    jul: 6,
+    aug: 7,
+    sep: 8,
+    oct: 9,
+    nov: 10,
+    dec: 11,
   };
 
   const today = new Date();
@@ -67,7 +60,7 @@ const checkCat = (data) => {
   const todayDate = today.getDate();
 
   data.forEach((person) => {
-    const [monthStr, dayStr] = person.bday.split(' ');
+    const [monthStr, dayStr] = person.bday.split(" ");
     const month = monthMap[monthStr.toLowerCase()] + 1;
     const day = parseInt(dayStr);
 
@@ -81,9 +74,12 @@ const checkCat = (data) => {
       person.isbirthday = false;
     }
 
-    const dob = new Date(birthYear, monthMap[monthStr.toLowerCase()], dayStr).toISOString();
+    const dob = new Date(
+      birthYear,
+      monthMap[monthStr.toLowerCase()],
+      dayStr
+    ).toISOString();
     person.dob = dob;
-
   });
   // Sort the data array by dob in ascending order
   data.sort((a, b) => {
@@ -93,27 +89,21 @@ const checkCat = (data) => {
   return data;
 };
 
-
 // =======================================\
 // FILTER BIRTHDAYS
 const filterBdays = (people) => {
-
-  const filteredPeople = people.filter(person => person.isbirthday === true);
+  const filteredPeople = people.filter((person) => person.isbirthday === true);
   // todaybirthdayss.push(filteredPeople)
   // console.log('people', filteredPeople)
 
   // Remove the filtered people from the people array
-  const remainingPeople = people.filter(person => person.isbirthday !== true);
-  return remainingPeople
-
-}
-
-
-
+  const remainingPeople = people.filter((person) => person.isbirthday !== true);
+  return remainingPeople;
+};
 
 export async function getServerSideProps() {
   try {
-    const response = await fetch(BACKEND + '/getallperson');
+    const response = await fetch(BACKEND + "/getallperson");
     const result = await response.json();
     const res = await checkCat(result.data);
     const newpeople = await filterBdays(res);
@@ -121,11 +111,11 @@ export async function getServerSideProps() {
       props: {
         peoples: newpeople,
         initialPeoples: newpeople,
-        datafromdb:res,
+        datafromdb: res,
       },
     };
   } catch (error) {
-    console.error('Error fetching data:', error.message);
+    console.error("Error fetching data:", error.message);
 
     return {
       props: {
@@ -137,64 +127,68 @@ export async function getServerSideProps() {
   }
 }
 
-
 export default function Home({ peoples, initialPeoples, datafromdb }) {
-
   const [isDarkMode, setIsDarkMode] = useState(true); // State for tracking dark mode
 
   // defining the array of bdays
   const [people, setPeople] = useState(peoples);
-  const [initialPeople, setinitialPeople] = useState(initialPeoples)
+  const [initialPeople, setinitialPeople] = useState(initialPeoples);
 
-  const [todaybirthdays, settodayBirthdays] = useState([])
+  const [todaybirthdays, settodayBirthdays] = useState([]);
 
-
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState("");
 
   // to show a dialogue at the beginning
   const [showDialog, setShowDialog] = useState(false);
-  const [dialogcount, setdialogCount] = useState(0)
+  const [dialogcount, setdialogCount] = useState(0);
 
   // ANIMATION TYPE
-  const [animationtype, setanimationType] = useState('')
+  const [animationtype, setanimationType] = useState("");
 
   // prevent useeffect running twice
-
-
-
 
   // BIRTHDAY CARD --------------------------------------
 
   // popup card--------------------------------
   // function PopupCard({ id, index, name, picUrl, dob, bday, bio, popupOpen, openPopup, closePopup, min, sec }: { id: string, index: any, name: string, picUrl: string, dob: string, bday: string, bio: string, popupOpen: boolean, openPopup: any, closePopup: any, min: string, sec: string }) {
-  function PopupCard({ id, index, name, picUrl, dob, bday, bio, popupOpen, openPopup, closePopup, min, sec }) {
-
+  function PopupCard({
+    id,
+    index,
+    name,
+    picUrl,
+    dob,
+    bday,
+    bio,
+    popupOpen,
+    openPopup,
+    closePopup,
+    min,
+    sec,
+  }) {
     const [showPopup, setShowPopup] = useState(false);
-    const [editMode, setEditMode] = useState(false)
+    const [editMode, setEditMode] = useState(false);
 
     const [alertSeverity, setAlertSeverity] = useState();
-    const [alertMessage, setAlertMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState("");
     const [isAlertOpen, setIsAlertOpen] = useState(false);
 
     // const [alerttext,setalertText] = useState('')
     // const [alertcolor,setalertColor] = useState('text-green-900')
 
-    const [hidesubmit, sethideSubmit] = useState(false)
+    const [hidesubmit, sethideSubmit] = useState(false);
     const [deleteFlag, setDeleteFlag] = useState(false);
 
-    const [showprogress, setshowProgress] = useState(false)
+    const [showprogress, setshowProgress] = useState(false);
 
     const [pic, setPic] = useState(null);
     const [originalPic, setOriginalPic] = useState(picUrl);
-
-
 
     const [formData, setFormData] = useState({
       id: id,
       name: name,
       bday: bday,
       pic: picUrl,
-      bio: bio
+      bio: bio,
     });
 
     const handleDelete = () => {
@@ -205,104 +199,126 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
     const handleSubmit = async (e, val) => {
       e.preventDefault();
 
-      setshowProgress(true)
+      setshowProgress(true);
 
       // e.preventDefault();
-      let todelete = false
+      let todelete = false;
 
       // console.log(event.currentTarget.value)
-      if (val === 'delete') {
-        todelete = true
+      if (val === "delete") {
+        todelete = true;
       } else {
-        todelete = false
+        todelete = false;
       }
 
       // create a new form data object
       const data = new FormData();
       // append the form data to the object
-      data.append('id', formData.id);
-      data.append('name', formData.name);
-      data.append('bday', formData.bday);
-      data.append('bio', formData.bio);
-      data.append('del', todelete.toString());
+      data.append("id", formData.id);
+      data.append("name", formData.name);
+      data.append("bday", formData.bday);
+      data.append("bio", formData.bio);
+      data.append("del", todelete.toString());
 
       // append the pic to the object
-      data.append('pic', pic !== null ? pic : formData.pic);
-
+      data.append("pic", pic !== null ? pic : formData.pic);
 
       // console.log('bio', formData)
       try {
         // send the post request to the server
-        const response = await fetch(BACKEND + '/addreview', {
-          method: 'POST',
-          body: data
+        const response = await fetch(BACKEND + "/addreview", {
+          method: "POST",
+          body: data,
         });
 
         // parse the response as JSON
         const resp = await response.json();
-        setAlertMessage(resp.message)
-        console.log(resp)
+        setAlertMessage(resp.message);
+        console.log(resp);
 
         if (resp.status === 201) {
-          console.log('201')
-          setAlertSeverity('success')
+          console.log("201");
+          setAlertSeverity("success");
         } else {
-          setAlertSeverity('warning')
+          setAlertSeverity("warning");
         }
 
-        setIsAlertOpen(true)
-        setshowProgress(false)
+        setIsAlertOpen(true);
+        setshowProgress(false);
 
         setTimeout(() => {
-          setIsAlertOpen(false)
+          setIsAlertOpen(false);
           // setalertText('')
         }, 2000);
       } catch (error) {
         if (error instanceof Error) {
-          console.log(error.message)
+          console.log(error.message);
         }
       }
-
 
       // // return the result
       // return result;
     };
 
-
-
-
     useEffect(() => {
       openPopup();
     }, [openPopup]);
 
-    const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
-    const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
+    const cardBg = isDarkMode ? "bg-gray-800" : "bg-gray-50";
+    const textColor = isDarkMode ? "text-white" : "text-gray-800";
 
     return (
       <>
-        <div className={`overlay ${popupOpen ? 'visible opacity-100' : 'invisible opacity-0'}`} onClick={closePopup}></div>
-        <div className={`fixed z-10 top-3 sm:top-10 left-0 h-screen w-screen flex items-center justify-center ${popupOpen ? 'visible' : 'invisible'}`}>
-          <div className={`shadow-lg rounded-md p-2 sm:p-4 w-[70%] sm:w-96 transition duration-600 transform ${popupOpen ? 'scale-100' : 'scale-0'} ${cardBg}`}>
+        <div
+          className={`overlay ${
+            popupOpen ? "visible opacity-100" : "invisible opacity-0"
+          }`}
+          onClick={closePopup}
+        ></div>
+        <div
+          className={`fixed z-10 top-3 sm:top-10 left-0 h-screen w-screen flex items-center justify-center ${
+            popupOpen ? "visible" : "invisible"
+          }`}
+        >
+          <div
+            className={`shadow-lg rounded-md p-2 sm:p-4 w-[70%] sm:w-96 transition duration-600 transform ${
+              popupOpen ? "scale-100" : "scale-0"
+            } ${cardBg}`}
+          >
             <div className="px-3 sm:px-0 flex justify-between items-center">
-              <button className={`h-10 w-10 text-2xl rounded-full p-2 ${cardBg}`} onClick={() => { editMode ? setEditMode(false) : setEditMode(true); }}>
+              <button
+                className={`h-10 w-10 text-2xl rounded-full p-2 ${cardBg}`}
+                onClick={() => {
+                  editMode ? setEditMode(false) : setEditMode(true);
+                }}
+              >
                 <FontAwesomeIcon icon={faEdit} />
               </button>
-              <button onClick={closePopup} className={`h-10 w-10 text-2xl rounded-full p-2 ${cardBg}`}>
+              <button
+                onClick={closePopup}
+                className={`h-10 w-10 text-2xl rounded-full p-2 ${cardBg}`}
+              >
                 <FontAwesomeIcon icon={faTimes} />
               </button>
             </div>
             {editMode ? (
               // FORM--------------------------------------
               <form className={`${cardBg} p-4 rounded-md shadow-md`}>
-
                 {/* to show the progress bar before the response*/}
-                <>{showprogress && <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <CircularProgress color="success" />
-                </Box>}
+                <>
+                  {showprogress && (
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                      <CircularProgress color="success" />
+                    </Box>
+                  )}
                 </>
 
                 {/* to show the alert after getting the response */}
-                <>{isAlertOpen && <Alert severity={alertSeverity}>{alertMessage}</Alert>}</>
+                <>
+                  {isAlertOpen && (
+                    <Alert severity={alertSeverity}>{alertMessage}</Alert>
+                  )}
+                </>
                 {/* <p className={`text-center ${alertcolor}`}>{alerttext}</p> */}
                 <div className="mb-4">
                   <label className={`${textColor} block mb-2`} htmlFor="name">
@@ -314,7 +330,9 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
                     type="text"
                     placeholder="Name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                   />
                 </div>
                 <div className="mb-4">
@@ -327,7 +345,9 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
                     type="text"
                     placeholder="eg. dec 25"
                     value={formData.bday}
-                    onChange={(e) => setFormData({ ...formData, bday: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, bday: e.target.value })
+                    }
                   />
                 </div>
 
@@ -357,7 +377,11 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
                             clipRule="evenodd"
                           />
                         </svg> */}
-                        <span className=" text-base leading-normal">{originalPic.name ? originalPic.name : `select an image`}</span>
+                        <span className=" text-base leading-normal">
+                          {originalPic.name
+                            ? originalPic.name
+                            : `select an image`}
+                        </span>
                         <input
                           className="hidden"
                           type="file"
@@ -387,8 +411,6 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
                   </div>
                 </div>
 
-
-
                 {/* updatesd image uploader */}
                 <div className="mb-4">
                   <label className={`${textColor} block mb-2`} htmlFor="bio">
@@ -400,46 +422,72 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
                     placeholder="Bio - less than 10 words"
                     rows={3}
                     value={formData.bio}
-                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, bio: e.target.value })
+                    }
                   ></textarea>
                 </div>
-                <div className={`flex ${hidesubmit ? 'justify-center' : 'justify-end'} mt-3 text-sm sm:text-md`}>
-                  {!hidesubmit && <button
-                    type="submit"
-                    value='submit'
-                    onClick={(e) => handleSubmit(e, 'submit')}
-                    className={`bg-green-500 text-white p-2 mr-2 rounded-md ${textColor}`}
-                  >
-                    Update
-                  </button>}
+                <div
+                  className={`flex ${
+                    hidesubmit ? "justify-center" : "justify-end"
+                  } mt-3 text-sm sm:text-md`}
+                >
+                  {!hidesubmit && (
+                    <button
+                      type="submit"
+                      value="submit"
+                      onClick={(e) => handleSubmit(e, "submit")}
+                      className={`bg-green-500 text-white p-2 mr-2 rounded-md ${textColor}`}
+                    >
+                      Update
+                    </button>
+                  )}
                   <button
                     type="button"
-                    value='delete'
+                    value="delete"
                     className={`bg-red-500 text-white p-2 rounded-md ${textColor}`}
                     onClick={(e) => {
-                      { hidesubmit && handleSubmit(e, 'delete') }
-                      sethideSubmit(true)
+                      {
+                        hidesubmit && handleSubmit(e, "delete");
+                      }
+                      sethideSubmit(true);
                     }}
                   >
-                    {hidesubmit ? 'Confirm Deletion' : 'Delete My Profile'}
+                    {hidesubmit ? "Confirm Deletion" : "Delete My Profile"}
                   </button>
                 </div>
               </form>
-
-
-              // FORM-------------------------------------------------
             ) : (
-              <div className={editMode ? 'hidden' : 'block'}>
+              // FORM-------------------------------------------------
+              <div className={editMode ? "hidden" : "block"}>
                 <div className="mt-5">
-                  <img src={picUrl ? picUrl : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${name}'s picture`} className="h-[40%] sm:h-auto sm:w-full mx-auto object-cover rounded-t-md" />
+                  <img
+                    src={
+                      picUrl
+                        ? picUrl
+                        : `https://source.unsplash.com/random/200x200?sig=${index}`
+                    }
+                    alt={`${name}'s picture`}
+                    className="h-[40%] sm:h-auto sm:w-full mx-auto object-cover rounded-t-md"
+                  />
                 </div>
                 <div className="p-4">
-                  <div className={`flex items-center justify-between text-lg font-medium ${textColor}`}>
+                  <div
+                    className={`flex items-center justify-between text-lg font-medium ${textColor}`}
+                  >
                     <span>{name}</span>
-                    <span className="text-gray-600 dark:text-gray-400 capitalize">{bday}</span>
+                    <span className="text-gray-600 dark:text-gray-400 capitalize">
+                      {bday}
+                    </span>
                   </div>
-                  <div className="text-gray-600 text-center dark:text-gray-400 mt-2">{bio ? `'${bio}'` : `'This is a dummy bio'`}</div>
-                  <div className={`${textColor} font-medium text-center  text-xl mt-3`}><Timer expiryTimestamp={dob} min={min} sec={sec} /></div>
+                  <div className="text-gray-600 text-center dark:text-gray-400 mt-2">
+                    {bio ? `'${bio}'` : `'This is a dummy bio'`}
+                  </div>
+                  <div
+                    className={`${textColor} font-medium text-center  text-xl mt-3`}
+                  >
+                    <Timer expiryTimestamp={dob} min={min} sec={sec} />
+                  </div>
                 </div>
               </div>
             )}
@@ -449,40 +497,65 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
     );
   }
 
-
   const TodayBirthday = ({ key, person, index }) => {
-
-    const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
-    const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
+    const cardBg = isDarkMode ? "bg-gray-800" : "bg-gray-50";
+    const textColor = isDarkMode ? "text-white" : "text-gray-800";
 
     // getBirthdayQuote()
 
     return (
-      <div className={`${cardBg} shadow-md rounded-md py-2 my-2 h-full w-[18rem] md:w-96 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
+      <div
+        className={`${cardBg} shadow-md rounded-md py-2 my-2 h-full w-[18rem] md:w-96 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}
+      >
         <div className="relative">
-          <img src={person.pic ? person.pic : `https://source.unsplash.com/random/200x200?sig=${index}`} alt={`${person.name}'s picture`} className="w-4/5 mx-auto object-cover rounded-md" />
+          <img
+            src={
+              person.pic
+                ? person.pic
+                : `https://source.unsplash.com/random/200x200?sig=${index}`
+            }
+            alt={`${person.name}'s picture`}
+            className="w-4/5 mx-auto object-cover rounded-md"
+          />
           {/* <div className="absolute inset-0 bg-opacity-70 bg-gray-900 dark:bg-gray-800 rounded-md"></div> */}
         </div>
         <div className="p-2">
-          <div className={`flex flex-col sm:flex-row items-center justify-center  sm:space-x-2 text-lg font-medium ${textColor}`}>
+          <div
+            className={`flex flex-col sm:flex-row items-center justify-center  sm:space-x-2 text-lg font-medium ${textColor}`}
+          >
             {/* <span>{person.name}</span> */}
-            <h3 className={`text-center text-xl font-bold ${textColor} tracking-wide `}>Happy Birthday, {person.name}!</h3>
+            <h3
+              className={`text-center text-xl font-bold ${textColor} tracking-wide `}
+            >
+              Happy Birthday, {person.name}!
+            </h3>
             {/* <span className="text-gray-600 dark:text-gray-400 capitalize">{person.bday}</span> */}
           </div>
 
           <div className={`pt-4 ${textColor}`}>
-            <h4 className="text-md font-medium pb-2 text-center">{"Another year of beating like a healthy heart - happy birthday!"}</h4>
+            <h4 className="text-md font-medium pb-2 text-center">
+              {"Another year of beating like a healthy heart - happy birthday!"}
+            </h4>
             {/* <p>{quote}</p> */}
           </div>
-
         </div>
       </div>
     );
   };
 
-  function BirthdayCard({ index, cat, id, name, picUrl, dob, bday, bio, min, sec }) {
+  function BirthdayCard({
+    index,
+    cat,
+    id,
+    name,
+    picUrl,
+    dob,
+    bday,
+    bio,
+    min,
+    sec,
+  }) {
     const [popupOpen, setPopupOpen] = useState(false);
-
 
     const openPopup = () => {
       document.body.classList.add("no-scroll");
@@ -495,31 +568,59 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
       setPopupOpen(false);
     };
 
-
-    const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-gray-50';
-    const textColor = isDarkMode ? 'text-white' : 'text-gray-800';
-    // 
+    const cardBg = isDarkMode ? "bg-gray-800" : "bg-gray-50";
+    const textColor = isDarkMode ? "text-white" : "text-gray-800";
+    //
     return (
       <>
         {/* <AnimationOnScroll animateIn="animate__bounceIn" offset={150} initiallyVisible={true}  animatePreScroll={false}> */}
-        <div data-aos={animationtype} key={id} onClick={openPopup} className={`bdaycards ${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] sm:w-[15rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}>
-          <img src={picUrl ? picUrl : `https://randomuser.me/api/portraits/men/${index}.jpg`} alt={`${name}'s picture`} className="w-full object-cover rounded-t-md" />
+        <div
+          data-aos={animationtype}
+          key={id}
+          onClick={openPopup}
+          className={`bdaycards ${cardBg} shadow-md rounded-md p-2 sm:p-4 m-0 w-[10rem] sm:w-[15rem] md:w-72 transition duration-300 hover:shadow-lg transform hover:-translate-y-1 cursor-pointer`}
+        >
+          <img
+            src={
+              picUrl
+                ? picUrl
+                : `https://randomuser.me/api/portraits/men/${index}.jpg`
+            }
+            alt={`${name}'s picture`}
+            className="w-full object-cover rounded-t-md"
+          />
           <div className="p-2 sm:p-4 text-center sm:text-left">
-            <div className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}>
+            <div
+              className={`flex flex-col sm:flex-row items-center justify-between text-lg font-medium ${textColor}`}
+            >
               <span>{name}</span>
-              <span className="text-gray-600 dark:text-gray-400 text-xl capitalize">{bday}</span>
+              <span className="text-gray-600 dark:text-gray-400 text-xl capitalize">
+                {bday}
+              </span>
             </div>
             <Timer expiryTimestamp={dob} min={min} sec={sec} />
           </div>
         </div>
-        {popupOpen && <PopupCard id={id} index={index} name={name} picUrl={picUrl} dob={dob} bday={bday} bio={bio} popupOpen={popupOpen} openPopup={openPopup} closePopup={closePopup} min={min} sec={sec} />}
+        {popupOpen && (
+          <PopupCard
+            id={id}
+            index={index}
+            name={name}
+            picUrl={picUrl}
+            dob={dob}
+            bday={bday}
+            bio={bio}
+            popupOpen={popupOpen}
+            openPopup={openPopup}
+            closePopup={closePopup}
+            min={min}
+            sec={sec}
+          />
+        )}
         {/* </AnimationOnScroll> */}
       </>
     );
   }
-
-
-
 
   // birthday card calling data--------------------------
   function BirthdayCards() {
@@ -528,9 +629,20 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-0 sm:p-4">
         {people.map((person, index) => (
-          <BirthdayCard index={index} key={index} cat={person.category} id={person._id} name={person.name} picUrl={person.pic} dob={person.dob} bday={person.bday} bio={person.bio} min={person.min} sec={person.sec} />
+          <BirthdayCard
+            index={index}
+            key={index}
+            cat={person.category}
+            id={person._id}
+            name={person.name}
+            picUrl={person.pic}
+            dob={person.dob}
+            bday={person.bday}
+            bio={person.bio}
+            min={person.min}
+            sec={person.sec}
+          />
         ))}
-
       </div>
     );
   }
@@ -542,14 +654,13 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
     const searchValue = e.currentTarget.value.toLowerCase();
     // console.log(searchValue)
 
-    setSearch(searchValue)
-    setanimationType('slide-up')
+    setSearch(searchValue);
+    setanimationType("slide-up");
 
-    if (searchValue === '') {
-      setanimationType('slide-up')
-      return setPeople(initialPeople)
+    if (searchValue === "") {
+      setanimationType("slide-up");
+      return setPeople(initialPeople);
     } else {
-
       // Filter the people array based on the search value
       const filteredPeople = initialPeople.filter((person) =>
         person.name.toLowerCase().startsWith(searchValue)
@@ -558,25 +669,22 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
       // Update the people state with the filtered array
       setPeople(filteredPeople);
     }
-
   };
 
   // Function to toggle dark mode
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
-    Cookies.set('isDarkMode', !isDarkMode);
-  }
+    Cookies.set("isDarkMode", !isDarkMode);
+  };
 
   // Define the class names for dark and light mode
-  const appBgClass = isDarkMode ? 'bg-dark' : 'bg-light';
-  const appTextClass = isDarkMode ? 'text-white' : 'text-black';
-
-
+  const appBgClass = isDarkMode ? "bg-dark" : "bg-light";
+  const appTextClass = isDarkMode ? "text-white" : "text-black";
 
   // random image api
   async function fetchRandomUser() {
     try {
-      const response = await fetch('https://randomuser.me/api/');
+      const response = await fetch("https://randomuser.me/api/");
       const data = await response.json();
       const imageUrl = data.results[0].picture.large;
       console.log(imageUrl);
@@ -586,84 +694,76 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
     }
   }
 
-  const [runuse, setrunUse] = useState(true)
-
+  const [runuse, setrunUse] = useState(true);
 
   const getTodayBirthdays = (people) => {
-    const todayBirthdays = []
+    const todayBirthdays = [];
     people.forEach((person) => {
       if (person.isbirthday === true) {
-        todayBirthdays.push(person)
+        todayBirthdays.push(person);
       }
     });
-    return todayBirthdays
-  }
+    return todayBirthdays;
+  };
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/getallperson');
+      const response = await fetch("/getallperson");
       const result = await response.json();
-      const res = await checkCat(result.data)
-      const todaypeople = await getTodayBirthdays(res)
+      const res = await checkCat(result.data);
+      const todaypeople = await getTodayBirthdays(res);
 
-      console.log(todaypeople)
-      settodayBirthdays(todaypeople)
-
+      console.log(todaypeople);
+      settodayBirthdays(todaypeople);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
-    console.log('render useeffect')
-    fetchData()
-  }, [])
-
+    console.log("render useeffect");
+    fetchData();
+  }, []);
 
   // to store the dark-light mode in cookies
   useEffect(() => {
-    const savedIsDarkMode = Cookies.get('isDarkMode');
-    setIsDarkMode(savedIsDarkMode === 'true');
+    const savedIsDarkMode = Cookies.get("isDarkMode");
+    setIsDarkMode(savedIsDarkMode === "true");
   }, []);
 
   // first dialoge appear
   useEffect(() => {
-    const hasShownDialog = localStorage.getItem('hasShownDialog');
+    const hasShownDialog = localStorage.getItem("hasShownDialog");
     if (!hasShownDialog) {
       // If the dialog hasn't been shown before, show it and set the hasShownDialog flag
-      localStorage.setItem('hasShownDialog', true);
-      setShowDialog(true)
+      localStorage.setItem("hasShownDialog", true);
+      setShowDialog(true);
     }
 
     // Add or remove the modal-open class on the body element depending on whether the dialog is open
     if (showDialog) {
-      document.body.classList.add('modal-open');
+      document.body.classList.add("modal-open");
     } else {
-      document.body.classList.remove('modal-open');
+      document.body.classList.remove("modal-open");
     }
-
-
   }, [showDialog]);
-
 
   // ANIMATE USEEFFECT usnig AOS
   useEffect(() => {
     AOS.init({
       duration: 1000,
       offset: 100,
-      once: false
+      once: false,
     });
 
-    setanimationType('zoom-in')
-
+    setanimationType("zoom-in");
   }, []);
 
   useEffect(() => {
-    console.log(people[0])
+    console.log(people[0]);
     //     console.log(initialPeople)
-    console.log(todaybirthdays)
-  }, [])
-
+    console.log(todaybirthdays);
+  }, []);
 
   return (
     <div className={`w-screen min-h-screen ${appBgClass} ${appTextClass}`}>
@@ -672,21 +772,34 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
       {showDialog && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75">
           <div className="relative p-8 mx-auto mt-20 bg-white rounded-md shadow-lg w-1/2">
-            <button className="absolute top-0 right-0 m-4 text-gray-600 hover:text-gray-800" onClick={() => setShowDialog(false)}>
+            <button
+              className="absolute top-0 right-0 m-4 text-gray-600 hover:text-gray-800"
+              onClick={() => setShowDialog(false)}
+            >
               <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M18 6L6 18M6 6l12 12"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
             <p className="text-gray-800">
-              Please visit the{' '}
-              <Link href="/about" className="underline cursor-pointer">about
-              </Link>{' '}
+              Please visit the{" "}
+              <Link href="/about" className="underline cursor-pointer">
+                about
+              </Link>{" "}
               page.
-            </p></div>
+            </p>
+          </div>
         </div>
       )}
       {/* dialogue ends here */}
-      <div className={`flex items-center justify-center w-1/2 mx-auto pt-24 ${appBgClass}`}>
+      <div
+        className={`flex items-center justify-center w-1/2 mx-auto pt-24 ${appBgClass}`}
+      >
         <div className="relative w-full">
           <input
             className={`bg-gray-200 focus:bg-white border-transparent focus:border-gray-300 w-full rounded-md py-2 px-4 text-gray-700 leading-tight focus:outline-none`}
@@ -699,11 +812,15 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
             <button
               className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-700 hover:text-gray-900"
               onClick={() => {
-                setSearch('')
-                setPeople(initialPeople)
+                setSearch("");
+                setPeople(initialPeople);
               }}
             >
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                className="w-4 h-4 fill-current"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   className="heroicon-ui"
                   d="M9.29289,12 L4.64645,7.35355 C4.45118,7.15829 4.45118,6.84171 4.64645,6.64645 C4.84171,6.45118 5.15829,6.45118 5.35355,6.64645 L10,11.29289 L14.64645,6.64645 C14.84171,6.45118 15.15829,6.45118 15.35355,6.64645 C15.5488,6.84171 15.5488,7.15829 15.35355,7.35355 L10.70711,12 L15.35355,16.64645 C15.5488,16.8417 15.5488,17.1583 15.35355,17.3536 C15.15829,17.5488 14.84171,17.5488 14.64645,17.3536 L10,12.70711 L5.35355,17.3536 C5.15829,17.5488 4.84171,17.5488 4.64645,17.3536 C4.45118,17.1583 4.45118,16.8417 4.64645,16.64645 L9.29289,12 Z"
@@ -715,23 +832,32 @@ export default function Home({ peoples, initialPeoples, datafromdb }) {
       </div>
       <div>
         {people.length === 0 ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
             <CircularProgress />
           </Box>
-        ) : (<><div className='flex flex-col sm:flex-row flex-wrap items-center sm:items-start justify-center space-x-2 py-5'>
-          {(todaybirthdays && search.length === 0) &&
-            <>
-              {todaybirthdays.map((person, index) => {
-                return <TodayBirthday key={index} person={person} index={index} />
-              })}
-            </>
-          }
-        </div>
-          <div className='flex items-center justify-center pt-4'>
-            {people && <BirthdayCards />}
-          </div></>)}
+        ) : (
+          <>
+            <div className="flex flex-col sm:flex-row flex-wrap items-center sm:items-start justify-center space-x-2 py-5">
+              {todaybirthdays && search.length === 0 && (
+                <>
+                  {todaybirthdays.map((person, index) => {
+                    return (
+                      <TodayBirthday
+                        key={index}
+                        person={person}
+                        index={index}
+                      />
+                    );
+                  })}
+                </>
+              )}
+            </div>
+            <div className="flex items-center justify-center pt-4">
+              {people && <BirthdayCards />}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
-
 }

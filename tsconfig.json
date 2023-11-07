@@ -18,6 +18,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/adminsite.js", "pages/index.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/adminsite.js", "pages/index.js", "pages/unsubscribe/[email].js", "pages/unsubscribe/mailnotification/[index].tsx"],
   "exclude": ["node_modules"]
 }
