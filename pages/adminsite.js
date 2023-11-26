@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BACKEND } from "../components/functions";
 
 
 import Header from '@/components/Header';
@@ -83,7 +84,7 @@ function Review() {
 
         try {
             // Send a POST request to the backend API
-            const response = await fetch('/updateperson', {
+            const response = await fetch(BACKEND+'/updateperson', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -157,7 +158,7 @@ function Review() {
     useEffect(() => {
         const fetchReviewPersons = async () => {
             try {
-                const response = await fetch('/getreviewperson');
+                const response = await fetch(BACKEND+'/getreviewperson');
                 const data = await response.json();
 
                 const persons = data.data;
@@ -186,7 +187,7 @@ function Review() {
     useEffect(() => {
         async function getSuggestions() {
             try {
-                const response = await fetch('/getsuggestions');
+                const response = await fetch(BACKEND+'/getsuggestions');
                 const data = await response.json();
                 setSuggestions(data.data)
             } catch (error) {
