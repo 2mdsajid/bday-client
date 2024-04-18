@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-const unsubscribe = () => {
+const Unsubscribe = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isBtnClicked, setIsBtnClicked] = useState(false);
@@ -62,4 +62,4 @@ const unsubscribe = () => {
   );
 };
 
-export default unsubscribe;
+export default Unsubscribe;
